@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
                                                 {
                                                     type: 'uri',
                                                     label: 'สมัครสมาชิก',
-                                                    uri: `${process.env.FRONT_END_BASE_URL}${process.env.FRONT_END_PORT}/signup?userId=${userId}`, // URL สมัครสมาชิก
+                                                    uri: `${process.env.FRONT_END_BASE_URL}:${process.env.FRONT_END_PORT}/signup?userId=${userId}`, // URL สมัครสมาชิก
                                                 },
                                             ],
                                         },
@@ -41,7 +41,7 @@ router.post('/', (req, res) => {
                                                 {
                                                     type: 'uri',
                                                     label: 'แก้ไขข้อมูล',
-                                                    uri: `${process.env.FRONT_END_BASE_URL}${process.env.FRONT_END_PORT}/edit?userId=${userId}`, // URL แก้ไขข้อมูล
+                                                    uri: `${process.env.FRONT_END_BASE_URL}:${process.env.FRONT_END_PORT}/edit?userId=${userId}`, // URL แก้ไขข้อมูล
                                                 },
                                             ],
                                         },
@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
                                                 {
                                                     type: 'uri',
                                                     label: 'ยกเลิกสมาชิก',
-                                                    uri: `${process.env.FRONT_END_BASE_URL}${process.env.FRONT_END_PORT}/cancel?userId=${userId}`, // URL ยกเลิกสมาชิก
+                                                    uri: `${process.env.FRONT_END_BASE_URL}:${process.env.FRONT_END_PORT}/cancel?userId=${userId}`, // URL ยกเลิกสมาชิก
                                                 },
                                             ],
                                         },
