@@ -1,0 +1,52 @@
+name: Deploy BackendTheOne
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "FRONT_END_BASE_URL=${{ secrets.FRONT_END_BASE_URL }}" >> .env
+          echo "FRONT_END_PORT=${{ secrets.FRONT_END_PORT }}" >> .env
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        run: docker build -t theoneparking/backendtheone  .
+
+      - name: Publish Image to Docker Hub
+        run: docker push theoneparking/backendtheone:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from Docker Hub
+        run: docker pull theoneparking/backendtheone:latest
+
+      - name: Delete old container
+        run: docker rm -f backendtheone-container
+
+      - name: Create .env file on the server
+        run: |
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "OTHER_ENV_VAR=${{ secrets.OTHER_ENV_VAR }}" >> .env
+
+      - name: Run Docker Container
+        run: docker run --env-file .env -d -p 4000:4000 --name backendtheone-container theoneparking/backendtheone
