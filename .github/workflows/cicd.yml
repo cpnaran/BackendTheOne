@@ -49,4 +49,4 @@ jobs:
           echo "OTHER_ENV_VAR=${{ secrets.OTHER_ENV_VAR }}" >> .env
 
       - name: Run Docker Container
-        run: docker run --env-file .env -d -p 4000:4000 --name backendtheone-container theoneparking/backendtheone
+        run: docker run --env-file .env -d -p 3000:3000 --name backendtheone-container theoneparking/backendtheone
