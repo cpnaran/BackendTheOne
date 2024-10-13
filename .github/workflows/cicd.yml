@@ -40,6 +40,11 @@ jobs:
       - name: Delete old container
         run: docker rm -f backendtheone-container
 
+      - name: Remove previous Docker image
+        run: |
+          docker image prune -f --filter "until=24h"
+          docker rmi theoneparking/backendtheone:latest || true
+
       - name: Create .env file on the server
         run: |
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
