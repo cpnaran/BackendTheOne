@@ -1,0 +1,9 @@
+{
+  "production": {
+    "username": "root",
+    "password": "cpnaran@km2",
+    "database": "theONE",
+    "host": "98.80.248.196",
+    "dialect": "mysql"
+  }
+}

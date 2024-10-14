@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 router.post('/', (req, res) => {
@@ -8,10 +8,10 @@ router.post('/', (req, res) => {
 
         const linePayload = req.body.originalDetectIntentRequest.payload;
         const userId = linePayload.events[0].source.userId;
-        let carouselResponse
+        let response
         switch (intentName) {
             case 'สมัครสมาชิก/จัดการ':
-                carouselResponse = {
+                response = {
                     fulfillmentMessages: [
                         {
                             platform: 'LINE',
@@ -64,12 +64,17 @@ router.post('/', (req, res) => {
                     ],
                 };
                 break;
+
+            case 'วันหมดอายุ':
+                userId
+                response =
+                    { fulfillmentText: 'ขอโทษค่ะ ไม่สามารถประมวลผลได้ในขณะนี้' }
             default:
-                carouselResponse =
+                response =
                     { fulfillmentText: 'ขอโทษค่ะ ไม่สามารถประมวลผลได้ในขณะนี้' }
 
         }
-        res.json(carouselResponse);
+        res.json(response);
     } catch (error) {
         console.error('Error processing the webhook:', error);
         res.json({ fulfillmentText: 'ขอโทษค่ะ ไม่สามารถประมวลผลได้ในขณะนี้' });
@@ -78,4 +83,4 @@ router.post('/', (req, res) => {
 });
 
 
-module.exports = router;
+export default router;

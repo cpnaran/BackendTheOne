@@ -1,34 +1,27 @@
-require('dotenv').config();
-const express = require('express');
-const app = express();
-const mysql = require('mysql2');
+import { config } from 'dotenv';
+import express from 'express';
+import mysql from 'mysql2'
 
+const app = express();
 const PORT = process.env.PORT || 3000;
 const API_BASE_URL = process.env.API_BASE_URL;
 
-const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+config()
 
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error('Database connection failed:', err);
-    } else {
-        console.log('Connected to MySQL database!');
-        connection.release();  // Release the connection back to the pool
-    }
-});
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Middleware to parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
 
 //import routes
-const webHookRoutes = require('./routes/webhook');
-const userRoutes = require('./routes/user')
-
+import webHookRoutes from './src/routes/webhook.js';
+import userRoutes from './src/routes/user.js';
+console.log(new Date())
+app.get("/health", (req, res) => {
+    console.log("testenv", process.env.FRONT_END_BASE_URL);
+    res.json({ messege: "application is ready!" });
+});
 app.use('/webhook', webHookRoutes);
 app.use('/user', userRoutes)
 
