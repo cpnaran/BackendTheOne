@@ -1,8 +1,9 @@
 import { Sequelize } from 'sequelize';
+import { config } from 'dotenv';
 
-// กำหนดการเชื่อมต่อกับฐานข้อมูล MySQL
-const sequelize = new Sequelize('theONE', 'root', 'cpnaran@km2', {
-    host: '98.80.248.196',
+config()
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
     dialect: 'mysql',
 });
 

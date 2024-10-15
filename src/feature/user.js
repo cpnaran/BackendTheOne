@@ -36,3 +36,28 @@ export async function createUser(req) {
         throw e;
     }
 }
+
+export async function editUserProfile({ userId, fullName, telNo }) {
+    const transaction = await sequelize.transaction()
+    try {
+        await User.update(
+            {
+                fullName,
+                telNo
+            },
+            {
+                where: {
+                    userId,
+                },
+                transaction
+            }
+        );
+        await transaction.commit();
+
+        return 'SUCCESS'
+
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
+}
