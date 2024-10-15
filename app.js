@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import express from 'express';
 import mysql from 'mysql2'
+import scheduleOptionsTask from './src/cron/optionsJob.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,16 +15,21 @@ app.use(express.json());
 // Middleware to parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
+scheduleOptionsTask();
+
 //import routes
 import webHookRoutes from './src/routes/webhook.js';
 import userRoutes from './src/routes/user.js';
-console.log(new Date())
+import optionRoutes from './src/routes/option.js'
+
+
 app.get("/health", (req, res) => {
     console.log("testenv", process.env.FRONT_END_BASE_URL);
     res.json({ messege: "application is ready!" });
 });
 app.use('/webhook', webHookRoutes);
 app.use('/user', userRoutes)
+app.use('/options', optionRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
