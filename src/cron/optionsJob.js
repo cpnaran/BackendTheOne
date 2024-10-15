@@ -3,9 +3,8 @@ import { Op, where } from 'sequelize';
 import Package from '../models/Package.js';
 
 // สร้าง Cron Job ที่รันทุกนาที
-// cron.schedule('0 0 * * *', () => {
 const scheduleOptionsTask = () => {
-    cron.schedule('16 0 * * *', async () => {
+    cron.schedule('0 0 * * *', () => {
         console.log('Running Options job every day at midnight:', new Date());
         try {
             await Package.update({
