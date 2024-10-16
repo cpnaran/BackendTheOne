@@ -11,10 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "mysql2": "^3.11.3",
     "node-cron": "^3.0.3",
+    "promptpay-qr": "^0.5.0",
+    "qrcode": "^1.5.4",
     "sequelize": "^6.37.4"
   },
   "devDependencies": {
