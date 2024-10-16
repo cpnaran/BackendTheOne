@@ -15,8 +15,7 @@ export async function getOptionPackage() {
 export async function getOptionLicense(userId) {
     const data = await License.findAll({
         where: {
-            userId,
-            paymentState: 'PENDING'
+            userId
         },
         attributes: ['id', 'userId', 'license', 'paymentState']
     })
