@@ -3,6 +3,8 @@ import License from '../models/License.js';
 import Package from "../models/Package.js"
 import Transaction from '../models/Transaction.js';
 import User from "../models/User.js"
+import services from '../services/index.js';
+import feature from './index.js';
 
 export async function createUser(req) {
     const transaction = await sequelize.transaction()
@@ -23,8 +25,13 @@ export async function createUser(req) {
             license: str,
         }, { transaction })
         await transaction.commit();
+        const packageData = await Package.findOne({
+            where: packageId
+        })
         //GEN QR PAYMENT ส่ง LINE
-
+        const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: packageData.amount })
+        await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment })
+        console.log('Reply message to user')
         return 'success'
     } catch (e) {
         await transaction.rollback();

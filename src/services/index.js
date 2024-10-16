@@ -1,6 +1,6 @@
-import * as payload from "./promtpayQR.js";
+import * as promtpayQR from "./promtpayQR.js";
 
 
 export default {
-    payload
+    promtpayQR
 }
