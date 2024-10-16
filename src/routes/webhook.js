@@ -168,7 +168,7 @@ router.post('/', async (req, res) => {
                     where: { status: true }
                 })
                 const availableSlots = 86 - occupiedSlots
-                const response = {
+                response = {
                     fulfillmentMessages: [
                         {
                             platform: 'LINE',
