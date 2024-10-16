@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 config()
 const lineEndPoint = process.env.BASE_URL
 const channelAccessToken = process.env.ACCESS_TOKEN
-export async function replyUser(userId, token, method, amount = undefined) {
+export async function replyUser(userId, method, imgUrl = undefined) {
     switch (method) {
         case 'แก้ไขข้อมูล':
             await axios.post(
@@ -28,15 +28,36 @@ export async function replyUser(userId, token, method, amount = undefined) {
             );
             break;
         case 'สมัครสมาชิก':
-            await axios.post(lineEndPoint, {
-                replyToken: token,
-                messages: [
+            await axios.post('https://api.line.me/v2/bot/message/push', {
+                to: 'U96b9e6e3c26bed9a42ef7ef4cd03e397',
+                "messages": [
                     {
-                        type: 'image',
-                        originalContentUrl: `${process.env.PAYMENT_QR_URL}`, // URL ของ QR Code
-                        previewImageUrl: `${process.env.PAYMENT_QR_URL}`, // รูปตัวอย่าง (สามารถใช้ URL เดียวกัน)
-                    },
-                ],
+                        "type": "flex",
+                        "altText": "QR Promptpay",
+                        "contents": {
+                            "type": "bubble",
+                            "hero": {
+                                "type": "image",
+                                "url": imgUrl,
+                                "size": "full",
+                                "aspectRatio": "1:1",
+                                "aspectMode": "cover"
+                            },
+                            "body": {
+                                "type": "box",
+                                "layout": "vertical",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "สแกน QRCode Promptpay เพื่อชำระเงิน",
+                                        "weight": "bold",
+                                        "size": "lg"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
             }, {
                 headers: {
                     'Content-Type': 'application/json',
