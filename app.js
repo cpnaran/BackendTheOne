@@ -21,6 +21,7 @@ scheduleOptionsTask();
 import webHookRoutes from './src/routes/webhook.js';
 import userRoutes from './src/routes/user.js';
 import optionRoutes from './src/routes/option.js'
+import licenseRoutes from './src/routes/license.js'
 console.log(new Date());
 
 app.get("/health", (req, res) => {
@@ -30,9 +31,15 @@ app.get("/health", (req, res) => {
 app.get("/", (req, res) => {
     res.json({ messege: "success" });
 });
+
+app.post("/anpr", (req, res) => {
+    console.log(req.body)
+    res.json({ messege: "success" });
+});
 app.use('/webhook', webHookRoutes);
 app.use('/user', userRoutes)
 app.use('/options', optionRoutes)
+app.use('/license', licenseRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

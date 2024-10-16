@@ -94,7 +94,9 @@ router.post('/', async (req, res) => {
                     },
                     attributes: ['license', 'expiredAt'],
                 });
-
+                if (!expiredAt) {
+                    res.json({ fulfillmentText: 'ขอโทษค่ะ ไม่พบหมายเลขทะเบียนของผู้ใช้งานในระบบ' })
+                }
                 // เตรียมข้อมูลภายใน body ของ Flex Message
                 const bodyContents = expiredAt.map(item => ({
                     type: 'box',
