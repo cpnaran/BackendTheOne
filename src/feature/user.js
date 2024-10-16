@@ -30,7 +30,7 @@ export async function createUser(req) {
         })
         //GEN QR PAYMENT ส่ง LINE
         const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: packageData.amount })
-        await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment })
+        await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData })
         console.log('Reply message to user')
         return 'success'
     } catch (e) {

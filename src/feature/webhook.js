@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 config()
 const lineEndPoint = process.env.BASE_URL
 const channelAccessToken = process.env.ACCESS_TOKEN
-export async function replyUser(userId, method, imgUrl = undefined) {
+export async function replyUser(userId, method, imgUrl = undefined, packageData = undefined) {
     switch (method) {
         case 'แก้ไขข้อมูล':
             await axios.post(
@@ -49,9 +49,29 @@ export async function replyUser(userId, method, imgUrl = undefined) {
                                 "contents": [
                                     {
                                         "type": "text",
-                                        "text": "สแกน QRCode Promptpay เพื่อชำระเงิน",
+                                        "text": packageData.package,
                                         "weight": "bold",
                                         "size": "lg"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": `จำนวนเงินที่ต้องชำระ: `,
+                                        "weight": "bold",
+                                        "size": "lg"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": `${packageData.amount}`,
+                                        "weight": "bold",
+                                        "size": "xl"
+                                        "color": "#1DB446"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": `ชำระแล้ว กรุณาอัพโหลดรูปส่งมาในแชท`,
+                                        "weight": "bold",
+                                        "size": "lg",
+                                        "color": "#FF0000"
                                     }
                                 ]
                             }
