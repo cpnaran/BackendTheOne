@@ -14,10 +14,6 @@ export async function createUser(req) {
             telNo,
         }, { transaction })
 
-        // const dateNow = new Date()
-        // dateNow.setDate(days)
-        // dateNow.setHours(0, 0, 0, 0);
-        // const expiredAt = dateNow.toISOString()
         const str = license.replace(/\s+/g, '')
 
         const createTransaction = await Transaction.create({
