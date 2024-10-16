@@ -74,7 +74,7 @@ router.post('/', async (req, res) => {
                                                     {
                                                         type: 'uri',
                                                         label: 'เปลี่ยนทะเบียน',
-                                                        uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}&token=${replyToken}`,
+                                                        uri: `${process.env.FRONT_END_BASE_URL}/changePlate?userId=${userId}&token=${replyToken}`,
                                                     },
                                                 ],
                                             },
@@ -90,153 +90,170 @@ router.post('/', async (req, res) => {
                 const expiredAt = await License.findAll({
                     where: {
                         userId,
-                        paymentState: 'SUCCESS'
-                    }
-                    , attributes: ['license', 'expiredAt']
-                })
+                        paymentState: 'SUCCESS',
+                    },
+                    attributes: ['license', 'expiredAt'],
+                });
 
+                // เตรียมข้อมูลภายใน body ของ Flex Message
                 const bodyContents = expiredAt.map(item => ({
-                    type: "box",
-                    layout: "vertical",
+                    type: 'box',
+                    layout: 'vertical',
+                    margin: 'md',
+                    spacing: 'sm',
                     contents: [
                         {
-                            type: "text",
+                            type: 'text',
                             text: `หมายเลขทะเบียน: ${item.license}`,
-                            size: "md",
-                            color: "#333333"
+                            size: 'md',
+                            color: '#333333',
+                            weight: 'bold',
                         },
                         {
-                            type: "text",
-                            text: `วันหมดอายุ: ${new Date(item.expiredAt).toLocaleDateString('th-TH')}`,
-                            size: "lg",
-                            weight: "bold",
-                            color: "#FF5551"
-                        }
-                    ]
+                            type: 'text',
+                            text: `วันหมดอายุ: ${new Date(item.expiredAt).toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })}`,
+                            size: 'md',
+                            color: '#FF5551',
+                            weight: 'bold',
+                        },
+                        {
+                            type: 'separator',
+                            margin: 'sm',
+                        },
+                    ],
                 }));
 
+                // สร้าง response ที่เป็น Flex Message
                 response = {
                     fulfillmentMessages: [
                         {
                             platform: 'LINE',
-                            line: {
-                                "contents": {
-                                    "footer": {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                            {
-                                                "type": "button",
-                                                "style": "primary",
-                                                "color": "#1DB446",
-                                                "action": {
-                                                    "label": "ต่ออายุ",
-                                                    "type": "uri",
-                                                    "uri": `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}`
-                                                }
-                                            }
-                                        ]
+                            payload: {
+                                line: {
+                                    type: 'flex',
+                                    altText: 'แจ้งเตือนวันหมดอายุ',
+                                    contents: {
+                                        type: 'bubble',
+                                        header: {
+                                            type: 'box',
+                                            layout: 'vertical',
+                                            contents: [
+                                                {
+                                                    type: 'text',
+                                                    text: 'วันหมดอายุ',
+                                                    size: 'lg',
+                                                    color: '#1DB446',
+                                                    weight: 'bold',
+                                                },
+                                            ],
+                                        },
+                                        body: {
+                                            type: 'box',
+                                            layout: 'vertical',
+                                            contents: bodyContents,
+                                        },
+                                        footer: {
+                                            type: 'box',
+                                            layout: 'vertical',
+                                            contents: [
+                                                {
+                                                    type: 'button',
+                                                    style: 'primary',
+                                                    color: '#1DB446',
+                                                    action: {
+                                                        type: 'uri',
+                                                        label: 'ต่ออายุ',
+                                                        uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}`,
+                                                    },
+                                                },
+                                            ],
+                                        },
                                     },
-                                    "body": {
-                                        "layout": "vertical",
-                                        "type": "box",
-                                        "contents": bodyContents
-                                    },
-                                    "header": {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                            {
-                                                "text": "วันหมดอายุ",
-                                                "size": "lg",
-                                                "color": "#1DB446",
-                                                "type": "text",
-                                                "weight": "bold"
-                                            }
-                                        ]
-                                    },
-                                    "type": "bubble"
                                 },
-                                "type": "flex",
-                                "altText": "แจ้งเตือนวันหมดอายุ"
                             },
                         },
                     ],
-                }
+                };
                 break;
             case 'ตรวจสอบที่ว่าง':
-
                 const occupiedSlots = await License.count({
                     where: { status: true }
-                })
-                const availableSlots = 86 - occupiedSlots
+                });
+                const availableSlots = 86 - occupiedSlots;
+
                 response = {
                     fulfillmentMessages: [
                         {
                             platform: 'LINE',
-                            line: {
-                                type: "flex",
-                                altText: "แจ้งเตือนจำนวนช่องจอด",
-                                contents: {
-                                    type: "bubble",
-                                    header: {
-                                        type: "box",
-                                        layout: "vertical",
-                                        contents: [
-                                            {
-                                                type: "text",
-                                                text: "สถานะช่องจอด",
-                                                size: "lg",
-                                                color: "#1DB446",
-                                                weight: "bold"
-                                            }
-                                        ]
+                            payload: {
+                                line: {
+                                    type: 'flex',
+                                    altText: 'แจ้งเตือนจำนวนช่องจอด',
+                                    contents: {
+                                        type: 'bubble',
+                                        header: {
+                                            type: 'box',
+                                            layout: 'vertical',
+                                            contents: [
+                                                {
+                                                    type: 'text',
+                                                    text: 'สถานะช่องจอด',
+                                                    size: 'lg',
+                                                    color: '#1DB446',
+                                                    weight: 'bold',
+                                                },
+                                            ],
+                                        },
+                                        body: {
+                                            type: 'box',
+                                            layout: 'vertical',
+                                            contents: [
+                                                {
+                                                    type: 'text',
+                                                    text: 'จำนวนช่องจอดทั้งหมด: 86',
+                                                    size: 'md',
+                                                    color: '#333333',
+                                                },
+                                                {
+                                                    type: 'text',
+                                                    text: `จำนวนที่จอดแล้ว: ${occupiedSlots}`,
+                                                    size: 'md',
+                                                    color: '#333333',
+                                                },
+                                                {
+                                                    type: 'text',
+                                                    text: `จำนวนที่ว่าง: ${availableSlots}`,
+                                                    size: 'lg',
+                                                    weight: 'bold',
+                                                    color: availableSlots > 0 ? '#1DB446' : '#FF5551',
+                                                },
+                                            ],
+                                        },
+                                        footer: {
+                                            type: 'box',
+                                            layout: 'vertical',
+                                            contents: [
+                                                {
+                                                    type: 'button',
+                                                    style: 'primary',
+                                                    color: '#1DB446',
+                                                    action: {
+                                                        type: 'uri',
+                                                        label: 'สมัครสมาชิก',
+                                                        uri: `${process.env.FRONT_END_BASE_URL}/parking-status?userId=${userId}`,
+                                                    },
+                                                },
+                                            ],
+                                        },
                                     },
-                                    body: {
-                                        type: "box",
-                                        layout: "vertical",
-                                        contents: [
-                                            {
-                                                type: "text",
-                                                text: `จำนวนช่องจอดทั้งหมด: 86`,
-                                                size: "md",
-                                                color: "#333333"
-                                            },
-                                            {
-                                                type: "text",
-                                                text: `จำนวนที่จอดแล้ว: ${occupiedSlots}`,
-                                                size: "md",
-                                                color: "#333333"
-                                            },
-                                            {
-                                                type: "text",
-                                                text: `จำนวนที่ว่าง: ${availableSlots}`,
-                                                size: "lg",
-                                                weight: "bold",
-                                                color: availableSlots > 0 ? "#1DB446" : "#FF5551"
-                                            }
-                                        ]
-                                    },
-                                    footer: {
-                                        type: "box",
-                                        layout: "vertical",
-                                        contents: [
-                                            {
-                                                type: "button",
-                                                style: "primary",
-                                                color: "#1DB446",
-                                                action: {
-                                                    type: "uri",
-                                                    label: "สมัครสมาชิก",
-                                                    uri: `${process.env.FRONT_END_BASE_URL}/parking-status?userId=${userId}`
-                                                }
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    ]
+                                },
+                            },
+                        },
+                    ],
                 };
                 break;
             default:
