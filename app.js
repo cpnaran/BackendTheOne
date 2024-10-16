@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const API_BASE_URL = process.env.API_BASE_URL;
 
-config()
+config();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -21,11 +21,14 @@ scheduleOptionsTask();
 import webHookRoutes from './src/routes/webhook.js';
 import userRoutes from './src/routes/user.js';
 import optionRoutes from './src/routes/option.js'
-
+console.log(new Date());
 
 app.get("/health", (req, res) => {
     console.log("testenv", process.env.FRONT_END_BASE_URL);
     res.json({ messege: "application is ready!" });
+});
+app.get("/", (req, res) => {
+    res.json({ messege: "success" });
 });
 app.use('/webhook', webHookRoutes);
 app.use('/user', userRoutes)
