@@ -11,7 +11,7 @@ router.post('/', async (req, res) => {
         const intentName = req.body.queryResult.intent.displayName;
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
         console.log('body: ', req.body)
-        console.log('origin body' req.body.originalDetectIntentRequest.payload.data)
+        console.log('origin body', req.body.originalDetectIntentRequest.payload.data)
         const replyToken = req.body.originalDetectIntentRequest.payload.data.replyToken;
         const linePayload = req.body.originalDetectIntentRequest.payload;
         const userId = linePayload.events[0].source.userId;
