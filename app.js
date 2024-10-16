@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+import cors from "cors";
 import express from "express";
 import mysql from "mysql2";
 import scheduleOptionsTask from "./src/cron/optionsJob.js";
@@ -23,6 +24,8 @@ import userRoutes from './src/routes/user.js';
 import optionRoutes from './src/routes/option.js'
 import licenseRoutes from './src/routes/license.js'
 console.log(new Date());
+
+app.use(cors());
 
 app.get("/health", (req, res) => {
   console.log("testenv", process.env.FRONT_END_BASE_URL);
