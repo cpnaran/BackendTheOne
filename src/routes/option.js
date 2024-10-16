@@ -5,18 +5,28 @@ import express from 'Express'
 
 const router = express.Router();
 
-router.get('/', getOptionPackage)
+router.get('/packages', getOptionPackage)
+router.get('/license/:userId', getLicense)
 
 async function getOptionPackage(req, res, next) {
-
     try {
-        const response = await features.option.getOption()
+        const response = await features.option.getOptionPackage()
         res.json(response)
     } catch (error) {
         console.error('Error processing request:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(400).send(error.message);
     }
+}
 
+async function getLicense(req, res, next) {
+    try {
+        const { userId } = req.params
+        const response = await features.option.getOptionLicense(userId)
+        res.json(response)
+    } catch (error) {
+        console.error('Error processing request:', error);
+        res.status(400).send(error.message);
+    }
 }
 
 export default router;

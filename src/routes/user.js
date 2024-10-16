@@ -10,25 +10,25 @@ router.post('/edit-user', editUser)
 
 async function createUser(req, res, next) {
     try {
-        const { userId } = req.query
+        const { userId, token } = req.query
         const { fullName, telNo, packageName, license } = req.body
-        await features.user.createUser({ userId, fullName, telNo, packageName, license })
+        await features.user.createUser({ userId, fullName, telNo, packageName, license, token })
         res.json('success')
     } catch (error) {
         console.error('Error processing request:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(4000).send(error.message);
     }
 }
 
 async function editUser(req, res, next) {
     try {
-        const { userId } = req.query
+        const { userId, token } = req.query
         const { fullName, telNo } = req.body
-        const result = await features.user.editUserProfile({ userId, fullName, telNo })
+        const result = await features.user.editUserProfile({ userId, fullName, telNo, token })
         res.json(result)
     } catch (error) {
         console.error('Error processing request:', error);
-        res.status(500).send('Internal Server Error');
+        res.status(400).send(error.message);
     }
 }
 

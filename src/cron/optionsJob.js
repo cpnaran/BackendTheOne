@@ -4,7 +4,7 @@ import Package from '../models/Package.js';
 
 // สร้าง Cron Job ที่รันทุกนาที
 const scheduleOptionsTask = () => {
-    cron.schedule('0 0 * * *', () => {
+    cron.schedule('0 0 * * *', async () => {
         console.log('Running Options job every day at midnight:', new Date());
         try {
             await Package.update({
