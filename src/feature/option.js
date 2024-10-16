@@ -6,7 +6,7 @@ export async function getOptionPackage() {
     const data = await Package.findAll({
         where: {
             isActive: true
-        }, attributes: ['id', 'package', 'amount', 'days']
+        }
     })
     data.sort()
     return data
