@@ -22,62 +22,64 @@ router.post('/', async (req, res) => {
                 response = {
                     fulfillmentMessages: [
                         {
-                            platform: 'LINE',
-                            line: {
-                                altText: 'กรุณาเลือกฟอร์ม',
-                                type: 'template',
-                                template: {
-                                    type: 'carousel',
-                                    columns: [
-                                        {
-                                            thumbnailImageUrl: 'https://drive.google.com/uc?id=1PAkZ5ReDHXVidiT1-aGdfpBhEY53kzbq',
-                                            title: 'สมัครสมาชิก',
-                                            text: 'กรอกฟอร์มเพื่อสมัครสมาชิก',
-                                            actions: [
-                                                {
-                                                    type: 'uri',
-                                                    label: 'สมัครสมาชิก',
-                                                    uri: `${process.env.FRONT_END_BASE_URL}/signup?userId=${userId}&token=${replyToken}`, // URL สมัครสมาชิก
-                                                },
-                                            ],
-                                        },
-                                        {
-                                            thumbnailImageUrl: 'https://drive.google.com/uc?id=1sqXZceNP9Cmr65rABk1AtIB9P22RM8k5',
-                                            title: 'แก้ไขข้อมูล',
-                                            text: 'แก้ไขข้อมูลส่วนตัว',
-                                            actions: [
-                                                {
-                                                    type: 'uri',
-                                                    label: 'แก้ไขข้อมูล',
-                                                    uri: `${process.env.FRONT_END_BASE_URL}/edit?userId=${userId}&token=${replyToken}`, // URL แก้ไขข้อมูล
-                                                },
-                                            ],
-                                        },
-                                        {
-                                            thumbnailImageUrl: 'https://drive.google.com/uc?id=1pgGqrDG5MxV72dw2NdilSlQZ0SZbBLC-',
-                                            title: 'ต่ออายุแพ็คเกจ',
-                                            text: 'ต่ออายุแพ็คเกจ (สำหรับผู้ที่เคยสมัครแล้ว)',
-                                            actions: [
-                                                {
-                                                    type: 'uri',
-                                                    label: 'ต่ออายุแพ็คเกจ (สำหรับผู้ที่เคยสมัครแล้ว)',
-                                                    uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}&token=${replyToken}`, // URL ต่ออายุแพ็คเกจ
-                                                },
-                                            ],
-                                        },
-                                        {
-                                            thumbnailImageUrl: 'https://drive.google.com/uc?id=1vlr92XLjxD708UUMsXKNcJAUpoAhP--q',
-                                            title: 'เปลี่ยนทะเบียน',
-                                            text: 'เปลี่ยนทะเบียน',
-                                            actions: [
-                                                {
-                                                    type: 'uri',
-                                                    label: 'เปลี่ยนทะเบียน',
-                                                    uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}&token=${replyToken}`, // URL เปลี่ยนทะเบียน
-                                                },
-                                            ],
-                                        },
-                                    ],
+                            platform: 'LINE', // ระบุว่าเป็นแพลตฟอร์ม LINE
+                            payload: {
+                                line: {
+                                    type: 'template',
+                                    altText: 'กรุณาเลือกฟอร์ม', // ข้อความสำหรับอุปกรณ์ที่ไม่รองรับ template
+                                    template: {
+                                        type: 'carousel',
+                                        columns: [
+                                            {
+                                                thumbnailImageUrl: 'https://drive.google.com/uc?id=1PAkZ5ReDHXVidiT1-aGdfpBhEY53kzbq',
+                                                title: 'สมัครสมาชิก',
+                                                text: 'กรอกฟอร์มเพื่อสมัครสมาชิก',
+                                                actions: [
+                                                    {
+                                                        type: 'uri',
+                                                        label: 'สมัครสมาชิก',
+                                                        uri: `${process.env.FRONT_END_BASE_URL}/signup?userId=${userId}&token=${replyToken}`,
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                thumbnailImageUrl: 'https://drive.google.com/uc?id=1sqXZceNP9Cmr65rABk1AtIB9P22RM8k5',
+                                                title: 'แก้ไขข้อมูล',
+                                                text: 'แก้ไขข้อมูลส่วนตัว',
+                                                actions: [
+                                                    {
+                                                        type: 'uri',
+                                                        label: 'แก้ไขข้อมูล',
+                                                        uri: `${process.env.FRONT_END_BASE_URL}/edit?userId=${userId}&token=${replyToken}`,
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                thumbnailImageUrl: 'https://drive.google.com/uc?id=1pgGqrDG5MxV72dw2NdilSlQZ0SZbBLC-',
+                                                title: 'ต่ออายุแพ็คเกจ',
+                                                text: 'ต่ออายุแพ็คเกจ (สำหรับผู้ที่เคยสมัครแล้ว)',
+                                                actions: [
+                                                    {
+                                                        type: 'uri',
+                                                        label: 'ต่ออายุแพ็คเกจ',
+                                                        uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}&token=${replyToken}`,
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                thumbnailImageUrl: 'https://drive.google.com/uc?id=1vlr92XLjxD708UUMsXKNcJAUpoAhP--q',
+                                                title: 'เปลี่ยนทะเบียน',
+                                                text: 'เปลี่ยนทะเบียน',
+                                                actions: [
+                                                    {
+                                                        type: 'uri',
+                                                        label: 'เปลี่ยนทะเบียน',
+                                                        uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}&token=${replyToken}`,
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    },
                                 },
                             },
                         },
