@@ -260,6 +260,7 @@ router.post('/', async (req, res) => {
                 };
                 break;
             default:
+                console.log(req.body.originalDetectIntentRequest.payload.data)
                 if (req.body.originalDetectIntentRequest.payload.data.type === 'image') {
                     const userId = req.body.originalDetectIntentRequest.payload.data.source.userId;
                     const messageId = req.body.originalDetectIntentRequest.payload.data.message.id
