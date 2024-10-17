@@ -10,11 +10,14 @@ export async function createUser(req) {
     const transaction = await sequelize.transaction()
     try {
         const { userId, fullName, telNo, packageId, license, token } = req
-        const createdUser = await User.create({
-            userId,
-            fullName,
-            telNo,
-        }, { transaction })
+        const createdUser = await User.findOrCreate({
+            where: { userId },
+            defaults: {
+                fullName,
+                telNo,
+            },
+            transaction,
+        });
 
         const str = license.replace(/\s+/g, '')
 
@@ -30,7 +33,7 @@ export async function createUser(req) {
         })
         //GEN QR PAYMENT ส่ง LINE
         const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: packageData.amount })
-        await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData })
+        await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData, license })
         console.log('Reply message to user')
         return 'success'
     } catch (e) {

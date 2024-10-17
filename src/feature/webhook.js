@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 config()
 const lineEndPoint = process.env.BASE_URL
 const channelAccessToken = process.env.ACCESS_TOKEN
-export async function replyUser(userId, method, imgUrl = undefined, packageData = undefined) {
+export async function replyUser(userId, method, imgUrl = undefined, packageData = undefined, license = undefined) {
     switch (method) {
         case 'แก้ไขข้อมูล':
             await axios.post(
@@ -32,49 +32,122 @@ export async function replyUser(userId, method, imgUrl = undefined, packageData 
                 to: 'U96b9e6e3c26bed9a42ef7ef4cd03e397',
                 messages: [
                     {
-                        type: "flex",
-                        altText: "QR Promptpay",
-                        contents: {
-                            type: "bubble",
-                            hero: {
-                                type: "image",
-                                url: imgUrl,
-                                size: "full",
-                                aspectRatio: "1:1",
-                                aspectMode: "cover"
-                            },
-                            body: {
-                                type: "box",
-                                layout: "vertical",
-                                contents: [
-                                    {
-                                        type: "text",
-                                        text: packageData.package,
-                                        weight: "bold",
-                                        size: "lg"
-                                    },
-                                    {
-                                        type: "text",
-                                        text: `จำนวนเงินที่ต้องชำระ: `,
-                                        weight: "bold",
-                                        size: "lg"
-                                    },
-                                    {
-                                        type: "text",
-                                        text: `${packageData.amount}`,
-                                        weight: "bold",
-                                        size: "xl",
-                                        color: "#1DB446"
-                                    },
-                                    {
-                                        type: "text",
-                                        text: `ชำระแล้ว กรุณาอัพโหลดรูปส่งมาในแชท`,
-                                        weight: "bold",
-                                        size: "lg",
-                                        color: "#FF0000"
-                                    }
-                                ]
-                            }
+                        "type": "bubble",
+                        "body": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "md",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "QR Promptpay",
+                                    "wrap": true,
+                                    "weight": "bold",
+                                    "gravity": "center",
+                                    "size": "xl"
+                                },
+                                {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "margin": "lg",
+                                    "spacing": "sm",
+                                    "contents": [
+                                        {
+                                            "type": "box",
+                                            "layout": "baseline",
+                                            "spacing": "sm",
+                                            "contents": [
+                                                {
+                                                    "type": "text",
+                                                    "text": "ทะเบียน",
+                                                    "color": "#aaaaaa",
+                                                    "size": "sm",
+                                                    "flex": 1
+                                                },
+                                                {
+                                                    "type": "text",
+                                                    "text": "${license}",
+                                                    "wrap": true,
+                                                    "size": "sm",
+                                                    "color": "#666666",
+                                                    "flex": 4
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "box",
+                                            "layout": "baseline",
+                                            "spacing": "sm",
+                                            "contents": [
+                                                {
+                                                    "type": "text",
+                                                    "text": "แพ็คเก็จ",
+                                                    "color": "#aaaaaa",
+                                                    "size": "sm",
+                                                    "flex": 1
+                                                },
+                                                {
+                                                    "type": "text",
+                                                    "text": `${packageData.package}`,
+                                                    "wrap": true,
+                                                    "color": "#666666",
+                                                    "size": "sm",
+                                                    "flex": 4
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "box",
+                                            "layout": "baseline",
+                                            "spacing": "sm",
+                                            "contents": [
+                                                {
+                                                    "type": "text",
+                                                    "text": "ราคา",
+                                                    "color": "#aaaaaa",
+                                                    "size": "sm",
+                                                    "flex": 1
+                                                },
+                                                {
+                                                    "type": "text",
+                                                    "text": `${packageData.amount}`,
+                                                    "wrap": true,
+                                                    "color": "#50C878",
+                                                    "size": "sm",
+                                                    "flex": 4,
+                                                    "weight": "bold"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "margin": "xxl",
+                                    "contents": [
+                                        {
+                                            "type": "image",
+                                            "url": `${imgUrl}`,
+                                            "size": "xxl",
+                                            "margin": "md",
+                                            "aspectMode": "fit",
+                                            "aspectRatio": "1:1"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": "เมื่อชำระแล้วกรุณาอัพโหลดสลิปในแชท",
+                                            "color": "#FF0000",
+                                            "wrap": true,
+                                            "margin": "xxl",
+                                            "size": "sm",
+                                            "align": "center",
+                                            "weight": "bold",
+                                            "style": "normal"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     }
                 ]
