@@ -11,7 +11,6 @@ const Transaction = sequelize.define('Transaction', {
     userId: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
         references: {
             model: 'Users',  // Name of the target table
             key: 'userId',        // Primary key column in Users table
