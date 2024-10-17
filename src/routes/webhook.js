@@ -13,9 +13,6 @@ router.post('/', async (req, res) => {
 
         const replyToken = req.body.originalDetectIntentRequest.payload.data.replyToken;
         const userId = req.body.originalDetectIntentRequest.payload.data.source.userId;
-
-        console.log('replyToken', replyToken)
-        console.log('userId', userId)
         let response
         switch (intentName) {
             case 'สมัครสมาชิก/จัดการ':
