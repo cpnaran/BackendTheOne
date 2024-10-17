@@ -13,6 +13,7 @@ config()
 
 router.post('/', async (req, res) => {
     try {
+        console.log(req.body)
         const intentName = req.body.queryResult.intent.displayName;
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
 
