@@ -10,6 +10,7 @@ router.post('/', async (req, res) => {
     try {
         const intentName = req.body.queryResult.intent.displayName;
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
+        console.log(req.body.originalDetectIntentRequest.payload)
 
         const replyToken = req.body.originalDetectIntentRequest.payload.data.replyToken;
         const userId = req.body.originalDetectIntentRequest.payload.data.source.userId;
@@ -256,7 +257,8 @@ router.post('/', async (req, res) => {
                 };
                 break;
             default:
-                response = { fulfillmentText: 'ขอโทษค่ะ ไม่สามารถประมวลผลได้ในขณะนี้' }
+                if (req.body)
+                    response = { fulfillmentText: 'ขอโทษค่ะ ไม่สามารถประมวลผลได้ในขณะนี้' }
         }
         res.json(response);
     } catch (error) {
