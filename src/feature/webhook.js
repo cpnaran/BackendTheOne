@@ -153,6 +153,9 @@ export async function replyUser({ userId, method, imgUrl = undefined, packageDat
                                 ]
                             }
                         }
+                    }, {
+                        type: 'text',
+                        text: 'เมื่อชำระเงินผ่าน QRCode แล้วอัพโหลดสลิปได้เลย 😊'
                     }
                 ]
             }, {
