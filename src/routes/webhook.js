@@ -1,6 +1,11 @@
 import express from 'express';
 import { config } from 'dotenv';
 import License from '../models/License.js';
+import axios from 'axios';
+import jsQR from "jsqr";
+import { Jimp } from 'jimp';
+import Transaction from '../models/Transaction.js';
+import Package from '../models/Package.js';
 const router = express.Router();
 config()
 
@@ -10,7 +15,6 @@ router.post('/', async (req, res) => {
     try {
         const intentName = req.body.queryResult.intent.displayName;
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
-        console.log(req.body.originalDetectIntentRequest.payload)
 
         const replyToken = req.body.originalDetectIntentRequest.payload.data.replyToken;
         const userId = req.body.originalDetectIntentRequest.payload.data.source.userId;
@@ -88,7 +92,6 @@ router.post('/', async (req, res) => {
                 const expiredAt = await License.findAll({
                     where: {
                         userId,
-                        paymentState: 'SUCCESS',
                     },
                     attributes: ['license', 'expiredAt'],
                 });
@@ -257,8 +260,45 @@ router.post('/', async (req, res) => {
                 };
                 break;
             default:
-                if (req.body)
+                if (req.body.originalDetectIntentRequest.payload.data.type === 'image') {
+                    const userId = req.body.originalDetectIntentRequest.payload.data.source.userId;
+                    const messageId = req.body.originalDetectIntentRequest.payload.data.message.id
+                    const responseImg = await axios.get(`https://api.line.me/v2/bot/message/${messageId}/content`, {
+                        headers: { 'Authorization': `Bearer ${channelAccessToken}` },
+                        responseType: 'stream'
+                    })
+                    const imageBuffer = Buffer.from(response.data);
+                    // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
+                    const image = await Jimp.read(imageBuffer);
+                    const { data, width, height } = image.bitmap;
+
+                    // อ่าน QR code ด้วย jsQR
+                    const qrCode = jsQR(data, width, height);
+
+                    const getTrans = await Transaction.findOne({
+                        where: {
+                            userId
+                        }
+                    })
+                    const { amount } = await Package.findOne({
+                        where: {
+                            id: getTrans.packageId
+                        }
+                    })
+                    console.log(amount)
+                    if (qrCode) {
+                        console.log('QR Code Content:', qrCode.data);
+                        // const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                        //     data: qrCode, amount: 
+                        // }, {
+                        //     headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
+                        // })
+                    } else {
+                        console.log('No QR Code found');
+                    }
+                } else {
                     response = { fulfillmentText: 'ขอโทษค่ะ ไม่สามารถประมวลผลได้ในขณะนี้' }
+                }
         }
         res.json(response);
     } catch (error) {

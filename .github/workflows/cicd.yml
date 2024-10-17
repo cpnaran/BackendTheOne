@@ -24,6 +24,8 @@ jobs:
           echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
           echo "PHONE_NUMBER=${{ secrets.PHONE_NUMBER }}" >> .env
           echo "API_KEY_IMG_BB=${{ secrets.API_KEY_IMG_BB }}" >> .env
+          echo "API_KEY_SLIP_OK=${{ secrets.API_KEY_SLIP_OK }}" >> .env
+          echo "URL_SLIP_OK=${{ secrets.URL_SLIP_OK }}" >> .env
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -62,6 +64,8 @@ jobs:
           echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
           echo "PHONE_NUMBER=${{ secrets.PHONE_NUMBER }}" >> .env
           echo "API_KEY_IMG_BB=${{ secrets.API_KEY_IMG_BB }}" >> .env
+          echo "API_KEY_SLIP_OK=${{ secrets.API_KEY_SLIP_OK }}" >> .env
+          echo "URL_SLIP_OK=${{ secrets.URL_SLIP_OK }}" >> .env
 
       - name: Run Docker Container
         run: docker run --restart=always --env-file .env -d -p 3000:3000 --name backendtheone-container theoneparking/backendtheone
