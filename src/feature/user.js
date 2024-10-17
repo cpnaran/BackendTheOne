@@ -27,14 +27,14 @@ export async function createUser(req) {
             paymentState: 'PENDING',
             license: str,
         }, { transaction })
-        await transaction.commit();
         const packageData = await Package.findOne({
             where: packageId
         })
-        //GEN QR PAYMENT ส่ง LINE
         const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: packageData.amount })
+        console.log(urlQrPayment)
         await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData, license })
         console.log('Reply message to user')
+        await transaction.commit();
         return 'success'
     } catch (e) {
         await transaction.rollback();
