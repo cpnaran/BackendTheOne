@@ -301,7 +301,6 @@ router.post('/', async (req, res) => {
                         }, {
                             headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
                         })
-                        const res = { data: { success: true } }
 
                         //เช็ค response QR 
                         const isValid = res.data.success
