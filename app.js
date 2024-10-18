@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/anpr", (req, res) => {
-  console.log(req.body)
+  console.log(req)
   console.log(JSON.stringify(req.body))
   res.json({ messege: "success" });
 });
