@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
             case 'สมัครสมาชิก/จัดการ':
                 response = {
                     replyToken,
-                    message: {
+                    message: [
                         type: 'template',
                         altText: 'กรุณาเลือกฟอร์ม', // ข้อความสำหรับอุปกรณ์ที่ไม่รองรับ template
                         template: {
@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
                                 // },
                             ],
                         },
-                    }
+                    ]
                 }
 
                 await axios.post('https://api.line.me/v2/bot/message/reply', response, {
@@ -134,7 +134,7 @@ router.post('/', async (req, res) => {
                 // สร้าง response ที่เป็น Flex Message
                 response = {
                     replyToken,
-                    message: {
+                    message: [
                         type: 'flex',
                         altText: 'แจ้งเตือนวันหมดอายุ',
                         contents: {
@@ -174,7 +174,7 @@ router.post('/', async (req, res) => {
                                 ],
                             },
                         },
-                    },
+                    ],
                 };
 
                 await axios.post('https://api.line.me/v2/bot/message/reply', response, {
@@ -196,7 +196,7 @@ router.post('/', async (req, res) => {
 
                 response = {
                     replyToken,
-                    message: {
+                    message: [
                         type: 'flex',
                         altText: 'แจ้งเตือนจำนวนช่องจอด',
                         contents: {
@@ -256,7 +256,7 @@ router.post('/', async (req, res) => {
                                 ],
                             },
                         },
-                    },
+                    ],
 
                 };
                 await axios.post('https://api.line.me/v2/bot/message/reply', response, {
