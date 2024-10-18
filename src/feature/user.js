@@ -21,6 +21,21 @@ export async function createUser(req) {
         });
 
         const str = license.replace(/\s+/g, '')
+        const packageData = await Package.findOne({
+            where: { id: packageId }
+        })
+        if (packageData.packageType === 'PROMOTION') {
+            const isUsed = await Transaction.findOne({
+                where: {
+                    userId,
+                    packageId: packageId,
+                    paymentState: 'SUCCESS'
+                }
+            })
+            if (isUsed) {
+                throw new Error("ขอโทษค่ะ ผู้ใช้งานเคยสมัครแพ็คเกจโปรโมชั่นนี้ไปแล้ว")
+            }
+        }
 
         const createTransaction = await Transaction.create({
             userId,
@@ -28,14 +43,14 @@ export async function createUser(req) {
             paymentState: 'PENDING',
             license: str,
         }, { transaction })
-        const packageData = await Package.findOne({
-            where: { id: packageId }
-        })
+
         const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: packageData.amount })
         await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData, license })
         console.log('Reply message to user')
         await transaction.commit();
-        return 'SUCCESS'
+        return {
+            status: 200, message: "สมัครเรียบร้อยแล้ว"
+        }
     } catch (e) {
         await transaction.rollback();
         throw e;
