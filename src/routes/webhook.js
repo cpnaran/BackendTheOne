@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
             case 'สมัครสมาชิก/จัดการ':
                 response = {
                     replyToken,
-                    message: {
+                    messages: [
                         type: 'template',
                         altText: 'กรุณาเลือกฟอร์ม', // ข้อความสำหรับอุปกรณ์ที่ไม่รองรับ template
                         template: {
@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
                                 // },
                             ],
                         },
-                    }
+                    ]
                 }
 
                 await axios.post('https://api.line.me/v2/bot/message/reply', response, {
@@ -134,7 +134,7 @@ router.post('/', async (req, res) => {
                 // สร้าง response ที่เป็น Flex Message
                 response = {
                     replyToken,
-                    message: {
+                    messages: [
                         type: 'flex',
                         altText: 'แจ้งเตือนวันหมดอายุ',
                         contents: {
@@ -174,7 +174,7 @@ router.post('/', async (req, res) => {
                                 ],
                             },
                         },
-                    },
+                    ],
                 };
 
                 await axios.post('https://api.line.me/v2/bot/message/reply', response, {
@@ -196,7 +196,7 @@ router.post('/', async (req, res) => {
 
                 response = {
                     replyToken,
-                    message: {
+                    messages: [
                         type: 'flex',
                         altText: 'แจ้งเตือนจำนวนช่องจอด',
                         contents: {
@@ -256,7 +256,7 @@ router.post('/', async (req, res) => {
                                 ],
                             },
                         },
-                    },
+                    ],
 
                 };
                 await axios.post('https://api.line.me/v2/bot/message/reply', response, {
@@ -308,7 +308,7 @@ router.post('/', async (req, res) => {
                         if (isValid) {
                             const data = {
                                 replyToken,
-                                message: [
+                                messages: [
                                     {
                                         type: 'text',
                                         text: 'ชำระเงินสำเร็จแล้ว ขอบคุณที่ใช้บริการของเราค่ะ 😊'
@@ -375,7 +375,7 @@ router.post('/', async (req, res) => {
                         } else {
                             const data = {
                                 replyToken,
-                                message: [
+                                messages: [
                                     {
                                         type: 'text',
                                         text: 'สลิปชำระเงินไม่ถูกต้อง กรูณาตรวจสอบสลิปและส่งใหม่ค่ะ'
@@ -392,7 +392,7 @@ router.post('/', async (req, res) => {
                     } else {
                         const data = {
                             replyToken,
-                            message: [
+                            messages: [
                                 {
                                     type: 'text',
                                     text: 'สลิปชำระเงินไม่ถูกต้อง กรูณาตรวจสอบสลิปและส่งใหม่ค่ะ'
@@ -410,7 +410,7 @@ router.post('/', async (req, res) => {
                 } else {
                     const data = {
                         replyToken,
-                        message: [
+                        messages: [
                             {
                                 type: 'text',
                                 text: 'ขอโทษค่ะ ไม่สามารถประมวลผลได้ในขณะนี้'
@@ -430,7 +430,7 @@ router.post('/', async (req, res) => {
         console.error('Error processing the webhook:', error);
         const data = {
             replyToken,
-            message: [
+            messages: [
                 {
                     type: 'text',
                     text: 'ขอโทษค่ะ ไม่พบหมายเลขทะเบียนของผู้ใช้งานในระบบ'
