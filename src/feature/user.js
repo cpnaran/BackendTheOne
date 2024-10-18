@@ -13,6 +13,7 @@ export async function createUser(req) {
         const createdUser = await User.findOrCreate({
             where: { userId },
             defaults: {
+                userId,
                 fullName,
                 telNo,
             },
@@ -34,7 +35,7 @@ export async function createUser(req) {
         await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData, license })
         console.log('Reply message to user')
         await transaction.commit();
-        return 'success'
+        return 'SUCCESS'
     } catch (e) {
         await transaction.rollback();
         throw e;

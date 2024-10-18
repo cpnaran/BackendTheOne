@@ -39,6 +39,11 @@ const Package = sequelize.define('Package', {
     updatedAt: {
         type: DataTypes.DATE,
     },
+    packageType: {
+        type: DataTypes.ENUM('STANDARD', 'PROMOTION'),
+        allowNull: false,
+        defaultValue: 'STANDARD'
+    }
 });
 
 export default Package;

@@ -22,11 +22,6 @@ const License = sequelize.define('License', {
         allowNull: false,
         defaultValue: false
     },
-    paymentState: {
-        type: DataTypes.ENUM('SUCCESS', 'PENDING', 'CANCEL', "FAILED"),
-        allowNull: false,
-        defaultValue: 'PENDING'
-    },
     expiredAt: {
         type: DataTypes.DATE,
         allowNull: false,
