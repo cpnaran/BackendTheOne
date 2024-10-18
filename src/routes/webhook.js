@@ -24,61 +24,63 @@ router.post('/', async (req, res) => {
                 response = {
                     replyToken,
                     messages: [
-                        type: 'template',
-                        altText: 'กรุณาเลือกฟอร์ม', // ข้อความสำหรับอุปกรณ์ที่ไม่รองรับ template
-                        template: {
-                            type: 'carousel',
-                            columns: [
-                                {
-                                    thumbnailImageUrl: 'https://drive.google.com/uc?id=1PAkZ5ReDHXVidiT1-aGdfpBhEY53kzbq',
-                                    title: 'สมัครสมาชิก',
-                                    text: 'กรอกฟอร์มเพื่อสมัครสมาชิก',
-                                    actions: [
-                                        {
-                                            type: 'uri',
-                                            label: 'สมัครสมาชิก',
-                                            uri: `${process.env.FRONT_END_BASE_URL}/signup?userId=${userId}&token=${replyToken}`,
-                                        },
-                                    ],
-                                },
-                                {
-                                    thumbnailImageUrl: 'https://drive.google.com/uc?id=1sqXZceNP9Cmr65rABk1AtIB9P22RM8k5',
-                                    title: 'แก้ไขข้อมูล',
-                                    text: 'แก้ไขข้อมูลส่วนตัว',
-                                    actions: [
-                                        {
-                                            type: 'uri',
-                                            label: 'แก้ไขข้อมูล',
-                                            uri: `${process.env.FRONT_END_BASE_URL}/edit?userId=${userId}&token=${replyToken}`,
-                                        },
-                                    ],
-                                },
-                                {
-                                    thumbnailImageUrl: 'https://drive.google.com/uc?id=1pgGqrDG5MxV72dw2NdilSlQZ0SZbBLC-',
-                                    title: 'ต่ออายุแพ็คเกจ',
-                                    text: 'ต่ออายุแพ็คเกจ (สำหรับผู้ที่เคยสมัครแล้ว)',
-                                    actions: [
-                                        {
-                                            type: 'uri',
-                                            label: 'ต่ออายุแพ็คเกจ',
-                                            uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}&token=${replyToken}`,
-                                        },
-                                    ],
-                                },
-                                // {
-                                //     thumbnailImageUrl: 'https://drive.google.com/uc?id=1vlr92XLjxD708UUMsXKNcJAUpoAhP--q',
-                                //     title: 'เปลี่ยนทะเบียน',
-                                //     text: 'เปลี่ยนทะเบียน',
-                                //     actions: [
-                                //         {
-                                //             type: 'uri',
-                                //             label: 'เปลี่ยนทะเบียน',
-                                //             uri: `${process.env.FRONT_END_BASE_URL}/changePlate?userId=${userId}&token=${replyToken}`,
-                                //         },
-                                //     ],
-                                // },
-                            ],
-                        },
+                        {
+                            type: 'template',
+                            altText: 'กรุณาเลือกฟอร์ม', // ข้อความสำหรับอุปกรณ์ที่ไม่รองรับ template
+                            template: {
+                                type: 'carousel',
+                                columns: [
+                                    {
+                                        thumbnailImageUrl: 'https://drive.google.com/uc?id=1PAkZ5ReDHXVidiT1-aGdfpBhEY53kzbq',
+                                        title: 'สมัครสมาชิก',
+                                        text: 'กรอกฟอร์มเพื่อสมัครสมาชิก',
+                                        actions: [
+                                            {
+                                                type: 'uri',
+                                                label: 'สมัครสมาชิก',
+                                                uri: `${process.env.FRONT_END_BASE_URL}/signup?userId=${userId}&token=${replyToken}`,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        thumbnailImageUrl: 'https://drive.google.com/uc?id=1sqXZceNP9Cmr65rABk1AtIB9P22RM8k5',
+                                        title: 'แก้ไขข้อมูล',
+                                        text: 'แก้ไขข้อมูลส่วนตัว',
+                                        actions: [
+                                            {
+                                                type: 'uri',
+                                                label: 'แก้ไขข้อมูล',
+                                                uri: `${process.env.FRONT_END_BASE_URL}/edit?userId=${userId}&token=${replyToken}`,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        thumbnailImageUrl: 'https://drive.google.com/uc?id=1pgGqrDG5MxV72dw2NdilSlQZ0SZbBLC-',
+                                        title: 'ต่ออายุแพ็คเกจ',
+                                        text: 'ต่ออายุแพ็คเกจ (สำหรับผู้ที่เคยสมัครแล้ว)',
+                                        actions: [
+                                            {
+                                                type: 'uri',
+                                                label: 'ต่ออายุแพ็คเกจ',
+                                                uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}&token=${replyToken}`,
+                                            },
+                                        ],
+                                    },
+                                    // {
+                                    //     thumbnailImageUrl: 'https://drive.google.com/uc?id=1vlr92XLjxD708UUMsXKNcJAUpoAhP--q',
+                                    //     title: 'เปลี่ยนทะเบียน',
+                                    //     text: 'เปลี่ยนทะเบียน',
+                                    //     actions: [
+                                    //         {
+                                    //             type: 'uri',
+                                    //             label: 'เปลี่ยนทะเบียน',
+                                    //             uri: `${process.env.FRONT_END_BASE_URL}/changePlate?userId=${userId}&token=${replyToken}`,
+                                    //         },
+                                    //     ],
+                                    // },
+                                ],
+                            },
+                        }
                     ]
                 }
 
@@ -135,45 +137,47 @@ router.post('/', async (req, res) => {
                 response = {
                     replyToken,
                     messages: [
-                        type: 'flex',
-                        altText: 'แจ้งเตือนวันหมดอายุ',
-                        contents: {
-                            type: 'bubble',
-                            header: {
-                                type: 'box',
-                                layout: 'vertical',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: 'วันหมดอายุ',
-                                        size: 'lg',
-                                        color: '#1DB446',
-                                        weight: 'bold',
-                                    },
-                                ],
-                            },
-                            body: {
-                                type: 'box',
-                                layout: 'vertical',
-                                contents: bodyContents,
-                            },
-                            footer: {
-                                type: 'box',
-                                layout: 'vertical',
-                                contents: [
-                                    {
-                                        type: 'button',
-                                        style: 'primary',
-                                        color: '#1DB446',
-                                        action: {
-                                            type: 'uri',
-                                            label: 'ต่ออายุ',
-                                            uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}`,
+                        {
+                            type: 'flex',
+                            altText: 'แจ้งเตือนวันหมดอายุ',
+                            contents: {
+                                type: 'bubble',
+                                header: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'วันหมดอายุ',
+                                            size: 'lg',
+                                            color: '#1DB446',
+                                            weight: 'bold',
                                         },
-                                    },
-                                ],
+                                    ],
+                                },
+                                body: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: bodyContents,
+                                },
+                                footer: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [
+                                        {
+                                            type: 'button',
+                                            style: 'primary',
+                                            color: '#1DB446',
+                                            action: {
+                                                type: 'uri',
+                                                label: 'ต่ออายุ',
+                                                uri: `${process.env.FRONT_END_BASE_URL}/renew?userId=${userId}`,
+                                            },
+                                        },
+                                    ],
+                                },
                             },
-                        },
+                        }
                     ],
                 };
 
@@ -197,65 +201,67 @@ router.post('/', async (req, res) => {
                 response = {
                     replyToken,
                     messages: [
-                        type: 'flex',
-                        altText: 'แจ้งเตือนจำนวนช่องจอด',
-                        contents: {
-                            type: 'bubble',
-                            header: {
-                                type: 'box',
-                                layout: 'vertical',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: 'สถานะช่องจอด',
-                                        size: 'lg',
-                                        color: '#1DB446',
-                                        weight: 'bold',
-                                    },
-                                ],
-                            },
-                            body: {
-                                type: 'box',
-                                layout: 'vertical',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: 'จำนวนช่องจอดทั้งหมด: 86',
-                                        size: 'md',
-                                        color: '#333333',
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: `จำนวนที่จอดแล้ว: ${occupiedSlots}`,
-                                        size: 'md',
-                                        color: '#333333',
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: `จำนวนที่ว่าง: ${availableSlots}`,
-                                        size: 'lg',
-                                        weight: 'bold',
-                                        color: availableSlots > 0 ? '#1DB446' : '#FF5551',
-                                    },
-                                ],
-                            },
-                            footer: {
-                                type: 'box',
-                                layout: 'vertical',
-                                contents: [
-                                    {
-                                        type: 'button',
-                                        style: 'primary',
-                                        color: '#1DB446',
-                                        action: {
-                                            type: 'uri',
-                                            label: 'สมัครสมาชิก',
-                                            uri: `${process.env.FRONT_END_BASE_URL}/signup?userId=${userId}`,
+                        {
+                            type: 'flex',
+                            altText: 'แจ้งเตือนจำนวนช่องจอด',
+                            contents: {
+                                type: 'bubble',
+                                header: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'สถานะช่องจอด',
+                                            size: 'lg',
+                                            color: '#1DB446',
+                                            weight: 'bold',
                                         },
-                                    },
-                                ],
+                                    ],
+                                },
+                                body: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'จำนวนช่องจอดทั้งหมด: 86',
+                                            size: 'md',
+                                            color: '#333333',
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: `จำนวนที่จอดแล้ว: ${occupiedSlots}`,
+                                            size: 'md',
+                                            color: '#333333',
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: `จำนวนที่ว่าง: ${availableSlots}`,
+                                            size: 'lg',
+                                            weight: 'bold',
+                                            color: availableSlots > 0 ? '#1DB446' : '#FF5551',
+                                        },
+                                    ],
+                                },
+                                footer: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [
+                                        {
+                                            type: 'button',
+                                            style: 'primary',
+                                            color: '#1DB446',
+                                            action: {
+                                                type: 'uri',
+                                                label: 'สมัครสมาชิก',
+                                                uri: `${process.env.FRONT_END_BASE_URL}/signup?userId=${userId}`,
+                                            },
+                                        },
+                                    ],
+                                },
                             },
-                        },
+                        }
                     ],
 
                 };
