@@ -5,7 +5,6 @@ const LogData = sequelize.define('LogData', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
         primaryKey: true,
     },
     license: {
@@ -26,6 +25,14 @@ const LogData = sequelize.define('LogData', {
     },
     updatedAt: {
         type: DataTypes.DATE,
+    },
+    vehicleType: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    vehicleColor: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
 
