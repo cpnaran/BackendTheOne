@@ -6,6 +6,7 @@ import jsQR from "jsqr";
 import { Jimp } from 'jimp';
 import Transaction from '../models/Transaction.js';
 import Package from '../models/Package.js';
+import sequelize from '../../database.js';
 const router = express.Router();
 config()
 
@@ -290,7 +291,9 @@ router.post('/', async (req, res) => {
 
                     const getTrans = await Transaction.findOne({
                         where: {
-                            userId
+                            userId,
+                            order: [['createdAt', 'DESC']],
+                            paymentState: "PENDING"
                         }
                     })
                     const { amount } = await Package.findOne({
@@ -299,13 +302,12 @@ router.post('/', async (req, res) => {
                         }
                     })
                     if (qrCode) {
-                        console.log('QR Code Content:', qrCode);
                         const transaction = await sequelize.transaction()
-                        // const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                        //     data: qrCode, amount
-                        // }, {
-                        //     headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
-                        // })
+                        const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                            data: qrCode.data, amount
+                        }, {
+                            headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                        })
 
                         //เช็ค response QR 
                         const isValid = res.data.success
@@ -320,17 +322,13 @@ router.post('/', async (req, res) => {
                                     },
                                 ]
                             }
-                            const latestTransaction = await Transaction.findOne({
-                                where: { userId },
-                                order: [['createdAt', 'DESC']],
-                            });
 
-                            await latestTransaction.update({
+                            await getTrans.update({
                                 paymentState: 'SUCCESS'
                             }, { transaction })
 
                             const packageData = await Package.findOne({
-                                where: latestTransaction.packageId
+                                where: getTrans.packageId
                             })
 
                             const dateNow = new Date()
@@ -338,10 +336,10 @@ router.post('/', async (req, res) => {
                             dateNow.setHours(0, 0, 0, 0);
                             const expiredAt = dateNow.toISOString()
                             const [license, created] = await License.findOrCreate({
-                                where: { license: latestTransaction.license },
+                                where: { license: getTrans.license },
                                 defaults: {
                                     userId,
-                                    license: latestTransaction.license,
+                                    license: getTrans.license,
                                     status: false,
                                     expiredAt: expiredAt,
                                 },
@@ -400,7 +398,7 @@ router.post('/', async (req, res) => {
                             messages: [
                                 {
                                     type: 'text',
-                                    text: 'สลิปชำระเงินไม่ถูกต้อง กรูณาตรวจสอบสลิปและส่งใหม่ค่ะ'
+                                    text: 'สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ'
                                 },
                             ]
                         }
