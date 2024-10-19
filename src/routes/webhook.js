@@ -292,9 +292,9 @@ router.post('/', async (req, res) => {
                     const getTrans = await Transaction.findOne({
                         where: {
                             userId,
-                            order: [['createdAt', 'DESC']],
                             paymentState: "PENDING"
-                        }
+                        },
+                        order: [['createdAt', 'DESC']],
                     })
                     const { amount } = await Package.findOne({
                         where: {
