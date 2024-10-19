@@ -322,7 +322,6 @@ router.post('/', async (req, res) => {
                                     },
                                 ]
                             }
-
                             await getTrans.update({
                                 paymentState: 'SUCCESS'
                             }, { transaction })
