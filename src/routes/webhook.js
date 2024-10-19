@@ -274,6 +274,7 @@ router.post('/', async (req, res) => {
                 break;
             default:
                 console.log(req.body.events[0].type)
+                console.log(req.body.events[0].message)
                 if (req.body.events[0].type === 'image') {
                     const userId = req.body.events[0].source.userId;
                     const messageId = req.body.events[0].message.id;
