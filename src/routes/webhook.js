@@ -276,9 +276,8 @@ router.post('/', async (req, res) => {
                 if (req.body.events[0].message.type === 'image') {
                     const userId = req.body.events[0].source.userId;
                     const messageId = req.body.events[0].message.id;
-                    const responseImg = await axios.get(`https://api.line.me/v2/bot/message/${messageId}/content`, {
-                        headers: { 'Authorization': `Bearer ${channelAccessToken}` },
-                        responseType: 'stream'
+                    const responseImg = await axios.get(`https://api-data.line.me/v2/bot/message/${messageId}/content`, {
+                        headers: { 'Authorization': `Bearer ${channelAccessToken}` }
                     })
                     const imageBuffer = Buffer.from(responseImg.data);
                     // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
