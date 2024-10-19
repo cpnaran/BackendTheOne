@@ -23,6 +23,7 @@ import webHookRoutes from './src/routes/webhook.js';
 import userRoutes from './src/routes/user.js';
 import optionRoutes from './src/routes/option.js'
 import licenseRoutes from './src/routes/license.js'
+import anprRoutes from './src/routes/anpr.js'
 console.log(new Date());
 
 app.use(cors());
@@ -35,11 +36,7 @@ app.get("/", (req, res) => {
   res.json({ messege: "success" });
 });
 
-app.post("/anpr", (req, res) => {
-  console.log(req)
-  console.log(JSON.stringify(req.body))
-  res.json({ messege: "success" });
-});
+app.use("/anpr", anprRoutes)
 app.use('/webhook', webHookRoutes);
 app.use('/user', userRoutes)
 app.use('/options', optionRoutes)

@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
     const userId = req.body.events[0].source.userId;
     const channelAccessToken = process.env.ACCESS_TOKEN
     try {
-        const intentName = req.body.events[0].message.text;
+        const intentName = req.body.events[0]?.message?.text || undefined;
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
         let response
         switch (intentName) {
@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
                     messages: [
                         {
                             type: 'template',
-                            altText: 'กรุณาเลือกฟอร์ม', // ข้อความสำหรับอุปกรณ์ที่ไม่รองรับ template
+                            altText: 'กรุณาเลือกฟอร์ม',
                             template: {
                                 type: 'carousel',
                                 columns: [
@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
                                     {
                                         thumbnailImageUrl: 'https://drive.google.com/uc?id=1pgGqrDG5MxV72dw2NdilSlQZ0SZbBLC-',
                                         title: 'ต่ออายุแพ็คเกจ',
-                                        text: 'ต่ออายุแพ็คเกจ (สำหรับผู้ที่เคยสมัครแล้ว)',
+                                        text: 'ต่ออายุแพ็คเกจ (สำหรับผู้ที่มีเลขทะเบียนอยู่ในระบบแล้ว)',
                                         actions: [
                                             {
                                                 type: 'uri',
@@ -98,7 +98,7 @@ router.post('/', async (req, res) => {
                     },
                     attributes: ['license', 'expiredAt'],
                 });
-                if (!expiredAt) {
+                if (!license) {
                     res.json({ fulfillmentText: 'ขอโทษค่ะ ไม่พบหมายเลขทะเบียนของผู้ใช้งานในระบบ' })
                 }
                 // เตรียมข้อมูลภายใน body ของ Flex Message
