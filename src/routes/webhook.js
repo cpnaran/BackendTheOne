@@ -6,6 +6,7 @@ import jsQR from "jsqr";
 import { Jimp } from 'jimp';
 import Transaction from '../models/Transaction.js';
 import Package from '../models/Package.js';
+import sequelize from '../../database.js';
 const router = express.Router();
 config()
 
@@ -299,13 +300,12 @@ router.post('/', async (req, res) => {
                         }
                     })
                     if (qrCode) {
-                        console.log('QR Code Content:', qrCode);
                         const transaction = await sequelize.transaction()
-                        // const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                        //     data: qrCode, amount
-                        // }, {
-                        //     headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
-                        // })
+                        const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                            data: qrCode.data, amount
+                        }, {
+                            headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
+                        })
 
                         //เช็ค response QR 
                         const isValid = res.data.success
@@ -400,7 +400,7 @@ router.post('/', async (req, res) => {
                             messages: [
                                 {
                                     type: 'text',
-                                    text: 'สลิปชำระเงินไม่ถูกต้อง กรูณาตรวจสอบสลิปและส่งใหม่ค่ะ'
+                                    text: 'สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ'
                                 },
                             ]
                         }
