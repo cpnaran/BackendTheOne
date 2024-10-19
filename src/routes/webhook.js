@@ -273,9 +273,7 @@ router.post('/', async (req, res) => {
                 });
                 break;
             default:
-                console.log(req.body.events[0].type)
-                console.log(req.body.events[0].message)
-                if (req.body.events[0].type === 'image') {
+                if (req.body.events[0].message.type === 'image') {
                     const userId = req.body.events[0].source.userId;
                     const messageId = req.body.events[0].message.id;
                     const responseImg = await axios.get(`https://api.line.me/v2/bot/message/${messageId}/content`, {
