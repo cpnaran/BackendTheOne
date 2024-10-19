@@ -291,7 +291,9 @@ router.post('/', async (req, res) => {
 
                     const getTrans = await Transaction.findOne({
                         where: {
-                            userId
+                            userId,
+                            order: [['createdAt', 'DESC']],
+                            paymentState: "PENDING"
                         }
                     })
                     const { amount } = await Package.findOne({
@@ -304,7 +306,7 @@ router.post('/', async (req, res) => {
                         const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
                             data: qrCode.data, amount
                         }, {
-                            headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
+                            headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
                         })
 
                         //เช็ค response QR 
@@ -320,17 +322,12 @@ router.post('/', async (req, res) => {
                                     },
                                 ]
                             }
-                            const latestTransaction = await Transaction.findOne({
-                                where: { userId },
-                                order: [['createdAt', 'DESC']],
-                            });
-
-                            await latestTransaction.update({
+                            await getTrans.update({
                                 paymentState: 'SUCCESS'
                             }, { transaction })
 
                             const packageData = await Package.findOne({
-                                where: latestTransaction.packageId
+                                where: getTrans.packageId
                             })
 
                             const dateNow = new Date()
@@ -338,10 +335,10 @@ router.post('/', async (req, res) => {
                             dateNow.setHours(0, 0, 0, 0);
                             const expiredAt = dateNow.toISOString()
                             const [license, created] = await License.findOrCreate({
-                                where: { license: latestTransaction.license },
+                                where: { license: getTrans.license },
                                 defaults: {
                                     userId,
-                                    license: latestTransaction.license,
+                                    license: getTrans.license,
                                     status: false,
                                     expiredAt: expiredAt,
                                 },
