@@ -279,10 +279,10 @@ router.post('/', async (req, res) => {
                     const responseImg = await axios.get(`https://api-data.line.me/v2/bot/message/${messageId}/content`, {
                         headers: { 'Authorization': `Bearer ${channelAccessToken}` }
                     })
-                    // const imageBuffer = Buffer.from(responseImg.data);
+                    const imageBuffer = Buffer.from(responseImg.data);
                     // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
-                    // const image = await Jimp.read(imageBuffer);
-                    const { data, width, height } = responseImg.data.bitmap;
+                    const image = await Jimp.read(imageBuffer);
+                    const { data, width, height } = image.bitmap;
 
                     // อ่าน QR code ด้วย jsQR
                     const qrCode = jsQR(data, width, height);
