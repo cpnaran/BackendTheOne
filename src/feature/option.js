@@ -13,7 +13,7 @@ export async function getOptionLicense(userId) {
         where: {
             userId
         },
-        attributes: ['id', 'userId', 'license', 'paymentState']
+        attributes: ['id', 'userId', 'license']
     })
 
     return data

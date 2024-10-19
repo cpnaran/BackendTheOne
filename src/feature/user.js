@@ -37,6 +37,16 @@ export async function createUser(req) {
             }
         }
 
+        const getLicense = await License.findOne({
+            where: {
+                license: str
+            }
+        }
+        )
+        if (getLicense) {
+            throw new Error("ขอโทษค่ะ ทะเบียนนี้มีในระบบแล้ว")
+        }
+
         const createTransaction = await Transaction.create({
             userId,
             packageId,

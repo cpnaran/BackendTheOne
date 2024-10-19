@@ -27,6 +27,24 @@ const sendLine = async (message, userId) => {
     );
 }
 
+const sendLineAction = async (message, userId) => {
+    config()
+    const channelAccessToken = process.env.ACCESS_TOKEN
+    await axios.post(
+        'https://api.line.me/v2/bot/message/push',
+        {
+            to: userId,
+            messages: message
+        },
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${channelAccessToken}`,
+            },
+        }
+    );
+}
+
 // สร้าง Cron Job ที่รันทุกนาที
 const scheduleNotifyTask = () => {
     cron.schedule('0 11 * * *', async () => {
@@ -43,6 +61,45 @@ const scheduleNotifyTask = () => {
                     );
                     if (daysRemaining <= 0) {
                         const message = `🔔 ทะเบียน ${license.license} หมดอายุแล้ว ถ้าต้องการนำรถออกจะต้องชำระค่าปรับวันละ 100 บาท`;
+                        // const msg = {
+                        //     type: "flex",
+                        //     altText: "แจ้งเตือนหมดอายุ กรุณาชำระค่าปรับ",
+                        //     contents: {
+                        //         type: "bubble",
+                        //         body: {
+                        //             type: "box",
+                        //             layout: "vertical",
+                        //             contents: [
+                        //                 {
+                        //                     type: "text",
+                        //                     text: "คุณต้องการทำอะไร?",
+                        //                     weight: "bold",
+                        //                     size: "lg",
+                        //                     margin: "md"
+                        //                 },
+                        //                 {
+                        //                     type: "button",
+                        //                     style: "primary",
+                        //                     action: {
+                        //                         type: "message", // ปุ่มนี้จะส่งข้อความกลับในแชท
+                        //                         label: "ส่งข้อความ 1",
+                        //                         text: "คุณกดปุ่ม 1"
+                        //                     }
+                        //                 },
+                        //                 {
+                        //                     type: "button",
+                        //                     style: "secondary",
+                        //                     action: {
+                        //                         type: "message",
+                        //                         label: "ส่งข้อความ 2",
+                        //                         text: "คุณกดปุ่ม 2"
+                        //                     },
+                        //                     margin: "sm"
+                        //                 }
+                        //             ]
+                        //         }
+                        //     }
+                        // };
                         await sendLine(message, license.userId);
                     }
                     else if (daysRemaining <= 3 && daysRemaining != 1) {
