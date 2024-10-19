@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import mysql from "mysql2";
 import scheduleOptionsTask from "./src/cron/optionsJob.js";
+import scheduleNotifyTask from "./src/cron/notify.job.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 scheduleOptionsTask();
+scheduleNotifyTask();
 
 //import routes
 import webHookRoutes from './src/routes/webhook.js';
