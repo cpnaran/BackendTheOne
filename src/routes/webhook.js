@@ -279,10 +279,10 @@ router.post('/', async (req, res) => {
                     const responseImg = await axios.get(`https://api-data.line.me/v2/bot/message/${messageId}/content`, {
                         headers: { 'Authorization': `Bearer ${channelAccessToken}` }
                     })
-                    const imageBuffer = Buffer.from(responseImg.data);
+                    // const imageBuffer = Buffer.from(responseImg.data);
                     // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
-                    const image = await Jimp.read(imageBuffer);
-                    const { data, width, height } = image.bitmap;
+                    // const image = await Jimp.read(imageBuffer);
+                    const { data, width, height } = responseImg.bitmap;
 
                     // อ่าน QR code ด้วย jsQR
                     const qrCode = jsQR(data, width, height);
@@ -297,15 +297,14 @@ router.post('/', async (req, res) => {
                             id: getTrans.packageId
                         }
                     })
-                    console.log(amount)
                     if (qrCode) {
-                        console.log('QR Code Content:', qrCode.data);
+                        console.log('QR Code Content:', qrCode);
                         const transaction = await sequelize.transaction()
-                        const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                            data: qrCode, amount
-                        }, {
-                            headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
-                        })
+                        // const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                        //     data: qrCode, amount
+                        // }, {
+                        //     headers: { 'Authorization': `${process.env.API_KEY_SLIP_OK}` }
+                        // })
 
                         //เช็ค response QR 
                         const isValid = res.data.success
