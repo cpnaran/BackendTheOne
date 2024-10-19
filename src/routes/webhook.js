@@ -281,7 +281,7 @@ router.post('/', async (req, res) => {
                     })
                     const imageBuffer = Buffer.from(responseImg.data);
                     // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
-                    const image = await Jimp.read(imageBuffer);
+                    const image = await Jimp.read({ data: imageBuffer, mime: 'image/jpg' });
                     const { data, width, height } = image.bitmap;
 
                     // อ่าน QR code ด้วย jsQR
