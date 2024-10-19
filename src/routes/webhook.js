@@ -429,23 +429,41 @@ router.post('/', async (req, res) => {
         }
         res.json('SUCCESS');
     } catch (error) {
-        console.error('Error processing the webhook:', error);
-        const data = {
-            replyToken,
-            messages: [
-                {
-                    type: 'text',
-                    text: 'ขอโทษค่ะ ไม่พบหมายเลขทะเบียนของผู้ใช้งานในระบบ'
+        if (error.response.status === 400) {
+            const data = {
+                replyToken,
+                messages: [
+                    {
+                        type: 'text',
+                        text: 'สลิปชำระเงินไม่ถูกต้อง กรูณาตรวจสอบสลิปและส่งใหม่ค่ะ'
+                    },
+                ]
+            }
+            await axios.post('https://api.line.me/v2/bot/message/reply', data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${channelAccessToken}`,
                 },
-            ]
+            });
+        } else {
+            console.error('Error processing the webhook:', error);
+            const data = {
+                replyToken,
+                messages: [
+                    {
+                        type: 'text',
+                        text: 'ขอโทษค่ะ ไม่พบหมายเลขทะเบียนของผู้ใช้งานในระบบ'
+                    },
+                ]
+            }
+            await axios.post('https://api.line.me/v2/bot/message/reply', data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${channelAccessToken}`,
+                },
+            });
+            res.json({ message: error });
         }
-        await axios.post('https://api.line.me/v2/bot/message/reply', data, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${channelAccessToken}`,
-            },
-        });
-        res.json({ message: error });
     }
 
 });
