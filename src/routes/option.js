@@ -17,7 +17,7 @@ async function getOptionPackage(req, res, next) {
     res.status(400).send(error.message);
   }
 }
-
+console.log("test commit");
 async function getLicense(req, res, next) {
   try {
     const { userId } = req.params;
