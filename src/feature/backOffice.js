@@ -1,5 +1,5 @@
 import Transaction from "../models/Transaction.js";
-
+import License from "../models/License.js";
 import { Op } from "sequelize";
 import { startOfMonth, endOfMonth, getYear } from "date-fns";
 
@@ -31,4 +31,16 @@ export async function getMonthlyRevenue(filter = null) {
   const resp = { income: SummaryRevenue };
 
   return resp || {};
+}
+
+export async function getTotalCar() {
+  let now_date = new Date();
+
+  const license = await License.findAll({
+    where: {
+      expiredAt: { [Op.gt]: now_date },
+    },
+  });
+
+  return { car_amount: license.length };
 }
