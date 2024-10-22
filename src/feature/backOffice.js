@@ -1,11 +1,13 @@
 import Transaction from "../models/Transaction.js";
-import Package from "../models/Package.js";
-import { Op } from "sequelize";
-import { startOfMonth, endOfMonth } from "date-fns";
 
-export async function getMonthlyRevenue() {
-  //const now_date_tz = formatInTimeZone(new Date(), tz, date_format);
-  const now_date = new Date("2024-10-13 00:00:00");
+import { Op } from "sequelize";
+import { startOfMonth, endOfMonth, getYear } from "date-fns";
+
+export async function getMonthlyRevenue(filter = null) {
+  let now_date = new Date();
+  const year = getYear(now_date);
+  filter ? (now_date = new Date(`${year}/${filter}/5`)) : (now_date = now_date);
+
   const start_of_month = startOfMonth(now_date);
 
   const end_of_month = endOfMonth(now_date);
@@ -15,50 +17,17 @@ export async function getMonthlyRevenue() {
       [Op.and]: [
         { updatedAt: { [Op.gte]: start_of_month } },
         { updatedAt: { [Op.lte]: end_of_month } },
-        { paymentState: "PENDING" },
+        { paymentState: "SUCCESS" },
       ],
     },
   });
 
-  const packages = await Package.findAll();
-
-  let frequencyCounter1 = {};
-  let frequencyCounter2 = {};
-  let penalty = {};
+  let SummaryRevenue = 0;
 
   for (let val of data) {
-    frequencyCounter1[val.packageId] =
-      (frequencyCounter1[val.packageId] || 0) + 1;
-
-    // penalty["30d27f15-0ace-4263-b789-1c851d20ac6c"] =
-    //   (penalty["30d27f15-0ace-4263-b789-1c851d20ac6c"] || 0) +
-    //   val.remark.penalty;
+    SummaryRevenue += val.amount;
   }
 
-  for (let val of packages) {
-    frequencyCounter2[val.id] = val.amount;
-  }
-
-  let SummaryRevenue = 0;
-  for (let key in frequencyCounter1) {
-    // key must not ค่าปรับ
-    if (
-      frequencyCounter2[key] &&
-      key !== "30d27f15-0ace-4263-b789-1c851d20ac6c"
-    ) {
-      SummaryRevenue += frequencyCounter1[key] * frequencyCounter2[key];
-    }
-    //to do เพิ่มคำนวณจากค่าปรับด้วย ตอนนี้ db ยังไม่มี
-    else if (
-      frequencyCounter2[key] &&
-      key === "30d27f15-0ace-4263-b789-1c851d20ac6c"
-    ) {
-    }
-  }
-  console.log(
-    "🚀 ~ file: backOffice.js:51 ~ getMonthlyRevenue ~ SummaryRevenue:",
-    SummaryRevenue
-  );
   const resp = { income: SummaryRevenue };
 
   return resp || {};
