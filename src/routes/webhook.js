@@ -276,19 +276,19 @@ router.post('/', async (req, res) => {
             default:
                 if (req.body.events[0].message.type === 'image') {
                     const userId = req.body.events[0].source.userId;
-                    const messageId = req.body.events[0].message.id;
-                    const responseImg = await axios.get(`https://api-data.line.me/v2/bot/message/${messageId}/content`, {
-                        headers: { 'Authorization': `Bearer ${channelAccessToken}` },
-                        responseType: 'arraybuffer'
-                    })
-                    const imageBuffer = Buffer.from(responseImg.data);
-                    // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
-                    const image = await Jimp.read(imageBuffer);
-                    const { data, width, height } = image.bitmap;
-
-                    // อ่าน QR code ด้วย jsQR
-                    const qrCode = jsQR(data, width, height);
-
+                    /* const messageId = req.body.events[0].message.id;
+                     const responseImg = await axios.get(`https://api-data.line.me/v2/bot/message/${messageId}/content`, {
+                         headers: { 'Authorization': `Bearer ${channelAccessToken}` },
+                         responseType: 'arraybuffer'
+                     })
+                     const imageBuffer = Buffer.from(responseImg.data);
+                     // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
+                     const image = await Jimp.read(imageBuffer);
+                     const { data, width, height } = image.bitmap;
+ 
+                     // อ่าน QR code ด้วย jsQR
+                     const qrCode = jsQR(data, width, height);
+ */
                     const getTrans = await Transaction.findOne({
                         where: {
                             userId,
@@ -296,21 +296,23 @@ router.post('/', async (req, res) => {
                         },
                         order: [['createdAt', 'DESC']],
                     })
-                    const { amount } = await Package.findOne({
+                    const getPackage = await Package.findOne({
                         where: {
                             id: getTrans.packageId
                         }
                     })
-                    if (qrCode) {
+                    // if (qrCode) {
+                    if (true) {
                         const transaction = await sequelize.transaction()
-                        const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                            data: qrCode.data, amount
-                        }, {
-                            headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
-                        })
+                        /*    const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                               data: qrCode.data, amount: getPackage.amount
+                           }, {
+                               headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                           }) */
 
                         //เช็ค response QR 
-                        const isValid = res.data.success
+                        //   const isValid = res.data.success
+                        const isValid = true
                         //ตอบกลับ user
                         if (isValid) {
                             const data = {
@@ -326,13 +328,11 @@ router.post('/', async (req, res) => {
                                 paymentState: 'SUCCESS'
                             }, { transaction })
 
-                            const packageData = await Package.findOne({
-                                where: getTrans.packageId
-                            })
-
-                            const dateNow = new Date()
-                            dateNow.setDate(packageData.days)
+                            //กรณีของการสมัครสมาชิกครั้งแรก
+                            let dateNow = new Date()
                             dateNow.setHours(0, 0, 0, 0);
+                            dateNow.setDate(dateNow + getPackage.days)
+                            dateNow.setHours(0, 0, 0, 0)
                             const expiredAt = dateNow.toISOString()
                             const [license, created] = await License.findOrCreate({
                                 where: { license: getTrans.license },
@@ -344,29 +344,55 @@ router.post('/', async (req, res) => {
                                 },
                                 transaction,
                             });
+
+                            //กรณีที่มีทะเบียนอยู่แล้ว
                             if (!created) {
-                                const date = new Date()
-                                date.setHours(0, 0, 0, 0);
-                                const licenseExpiredAt = new Date(license.expiredAt);
-                                let expDate
-                                if (date > licenseExpiredAt) {
-                                    expDate = expiredAt;
+                                let getDate = new Date()
+                                getDate.setHours(0, 0, 0, 0)
+                                if (license.expiredAt < getDate && license.status === true) {
+                                    console.log('แพ็คเก็จหมดอายุ และรถจอดอยู่ (จ่ายค่าปรับ)')
+                                    //กรณีแพ็คเก็จหมดอายุ และรถจอดอยู่ในที่จอด (จ่ายค่าปรับ)
+                                    let expired = new Date()
+                                    expired.setHours(0, 0, 0, 0)
+                                    expired.toISOString()
+                                    await license.update({
+                                        expiredAt: expired
+                                    })
+                                    const reply = {
+                                        replyToken,
+                                        messages: [
+                                            {
+                                                type: 'text',
+                                                text: 'ชำระค่าปรับเรียบร้อยแล้ว กรุณานำรถออกก่อนเวลาเที่ยงคืนค่ะ 😊'
+                                            },
+                                        ]
+                                    }
+
+                                    await axios.post('https://api.line.me/v2/bot/message/reply', reply, {
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            Authorization: `Bearer ${channelAccessToken}`,
+                                        },
+                                    })
+                                } else if (license.expiredAt >= getDate) {
+                                    console.log('แพ็คเก็จไม่หมด ต่อทะเบียน')
+                                    //กรณีแพ็คเกจยังไม่หมดและต่อทะเบียน
+                                    let expired = new Date(license.expiredAt + getPackage.days)
+                                    expired.toISOString()
+                                    await license.update({
+                                        expiredAt: expired
+                                    }, { transaction })
                                 } else {
-                                    expDate = licenseExpiredAt.setDate(packageData.days); // ใช้วันหมดอายุเดิม
-                                    expDate = new Date(expDate)
-                                    expDate.setHours(0, 0, 0, 0);
-                                    expDate = expDate.toISOString()
+                                    console.log('แพ็คเก็จหมดอายุ รถไม่ได้จอด')
+                                    //กรณีแพ็คเกจหมดอายุ แต่รถไม่ได้ใช้บริการอยู่
+                                    let expired = new Date(getDate + getPackage.days)
+                                    expired.toISOString()
+                                    await license.update({
+                                        expiredAt: expired
+                                    }, { transaction })
                                 }
-                                await license.update(
-                                    {
-                                        userId,
-                                        status: false,
-                                        expiredAt: expDate,
-                                    },
-                                    { transaction }
-                                );
-                                console.log('License updated successfully!');
                             }
+
                             await axios.post('https://api.line.me/v2/bot/message/reply', data, {
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -380,7 +406,7 @@ router.post('/', async (req, res) => {
                                 messages: [
                                     {
                                         type: 'text',
-                                        text: 'สลิปชำระเงินไม่ถูกต้อง กรูณาตรวจสอบสลิปและส่งใหม่ค่ะ'
+                                        text: 'สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ'
                                     },
                                 ]
                             }
@@ -429,13 +455,14 @@ router.post('/', async (req, res) => {
         }
         res.json('SUCCESS');
     } catch (error) {
-        if (error.response.status === 400) {
+        console.log('>>>>>>>>>>>>>>>', error)
+        /* if (error.response.status === 400) {
             const data = {
                 replyToken,
                 messages: [
                     {
                         type: 'text',
-                        text: 'สลิปชำระเงินไม่ถูกต้อง กรูณาตรวจสอบสลิปและส่งใหม่ค่ะ'
+                        text: 'สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ'
                     },
                 ]
             }
@@ -445,25 +472,25 @@ router.post('/', async (req, res) => {
                     Authorization: `Bearer ${channelAccessToken}`,
                 },
             });
-        } else {
-            console.error('Error processing the webhook:', error);
-            const data = {
-                replyToken,
-                messages: [
-                    {
-                        type: 'text',
-                        text: 'ขอโทษค่ะ ไม่พบหมายเลขทะเบียนของผู้ใช้งานในระบบ'
-                    },
-                ]
-            }
-            await axios.post('https://api.line.me/v2/bot/message/reply', data, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${channelAccessToken}`,
+        } else { */
+        console.error('Error processing the webhook:', error);
+        const data = {
+            replyToken,
+            messages: [
+                {
+                    type: 'text',
+                    text: 'สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ'
                 },
-            });
-            res.json({ message: error });
+            ]
         }
+        await axios.post('https://api.line.me/v2/bot/message/reply', data, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${channelAccessToken}`,
+            },
+        });
+        res.json({ message: error });
+        //}
     }
 
 });
