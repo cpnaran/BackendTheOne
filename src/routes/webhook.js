@@ -7,6 +7,7 @@ import { Jimp } from 'jimp';
 import Transaction from '../models/Transaction.js';
 import Package from '../models/Package.js';
 import sequelize from '../../database.js';
+import { add } from 'date-fns';
 const router = express.Router();
 config()
 
@@ -330,8 +331,7 @@ router.post('/', async (req, res) => {
 
                             //กรณีของการสมัครสมาชิกครั้งแรก
                             let dateNow = new Date()
-                            dateNow.setHours(0, 0, 0, 0);
-                            dateNow.setDate(dateNow + getPackage.days)
+                            dateNow = add(dateNow, { days: getPackage.days })
                             dateNow.setHours(0, 0, 0, 0)
                             //const expiredAt = dateNow.toISOString()
                             const [license, created] = await License.findOrCreate({
@@ -354,7 +354,6 @@ router.post('/', async (req, res) => {
                                     //กรณีแพ็คเก็จหมดอายุ และรถจอดอยู่ในที่จอด (จ่ายค่าปรับ)
                                     let expired = new Date()
                                     expired.setHours(0, 0, 0, 0)
-                                    expired.toISOString()
                                     await license.update({
                                         expiredAt: expired
                                     })
@@ -363,7 +362,7 @@ router.post('/', async (req, res) => {
                                         messages: [
                                             {
                                                 type: 'text',
-                                                text: 'ชำระค่าปรับเรียบร้อยแล้ว กรุณานำรถออกก่อนเวลาเที่ยงคืนค่ะ 😊'
+                                                text: 'ชำระค่าปรับเรียบร้อยแล้ว กรุณานำรถออกภายในนี้ก่อนเวลาเที่ยงคืนค่ะ 😊'
                                             },
                                         ]
                                     }
@@ -377,16 +376,16 @@ router.post('/', async (req, res) => {
                                 } else if (license.expiredAt >= getDate) {
                                     console.log('แพ็คเก็จไม่หมด ต่อทะเบียน')
                                     //กรณีแพ็คเกจยังไม่หมดและต่อทะเบียน
-                                    let expired = new Date(license.expiredAt + getPackage.days)
-                                    expired.toISOString()
+                                    let expired = add(new Date(license.expiredAt), { days: getPackage.days })
+                                    expired.setHours(0, 0, 0, 0)
                                     await license.update({
                                         expiredAt: expired
                                     }, { transaction })
                                 } else {
-                                    console.log('แพ็คเก็จหมดอายุ รถไม่ได้จอด')
+                                    console.log('แพ็คเก็จหมดอายุ รถไม่ได้จอด') //วันที่ผิด 30 วันแต่เพิ่มมาแค่ 1 และ
                                     //กรณีแพ็คเกจหมดอายุ แต่รถไม่ได้ใช้บริการอยู่
-                                    let expired = new Date(getDate + getPackage.days)
-                                    expired.toISOString()
+                                    let expired = add(new Date(getDate), { days: getPackage.days })
+                                    expired.setHours(0, 0, 0, 0)
                                     await license.update({
                                         expiredAt: expired
                                     }, { transaction })
