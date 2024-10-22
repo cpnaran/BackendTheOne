@@ -333,14 +333,14 @@ router.post('/', async (req, res) => {
                             dateNow.setHours(0, 0, 0, 0);
                             dateNow.setDate(dateNow + getPackage.days)
                             dateNow.setHours(0, 0, 0, 0)
-                            const expiredAt = dateNow.toISOString()
+                            //const expiredAt = dateNow.toISOString()
                             const [license, created] = await License.findOrCreate({
                                 where: { license: getTrans.license },
                                 defaults: {
                                     userId,
                                     license: getTrans.license,
                                     status: false,
-                                    expiredAt: expiredAt,
+                                    expiredAt: dateNow,
                                 },
                                 transaction,
                             });
