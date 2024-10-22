@@ -52,6 +52,7 @@ export async function createUser(req) {
             packageId,
             paymentState: 'PENDING',
             license: str,
+            amount: packageData.amount
         }, { transaction })
 
         const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: packageData.amount })

@@ -44,6 +44,10 @@ const Transaction = sequelize.define('Transaction', {
         type: DataTypes.DATE,
         allowNull: true,
     },
+    amount: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0
+    }
 })
 
 export default Transaction;

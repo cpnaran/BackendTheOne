@@ -29,7 +29,8 @@ export async function renewLicense(userId, packageId, license) {
                     userId,
                     packageId: '30d27f15-0ace-4263-b789-1c851d20ac6c',
                     paymentState: 'PENDING',
-                    license
+                    license,
+                    amount
                 })
                 const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount })
                 await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData, license })

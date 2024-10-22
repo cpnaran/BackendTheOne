@@ -356,7 +356,10 @@ router.post('/', async (req, res) => {
                                     expired.setHours(0, 0, 0, 0)
                                     await license.update({
                                         expiredAt: expired
-                                    })
+                                    }, { transaction })
+                                    await getTrans.update({
+                                        paymentState: `SUCCESS`
+                                    }, { transaction })
                                     const reply = {
                                         replyToken,
                                         messages: [
@@ -373,6 +376,7 @@ router.post('/', async (req, res) => {
                                             Authorization: `Bearer ${channelAccessToken}`,
                                         },
                                     })
+                                    return `SUCCESS`
                                 } else if (license.expiredAt >= getDate) {
                                     console.log('แพ็คเก็จไม่หมด ต่อทะเบียน')
                                     //กรณีแพ็คเกจยังไม่หมดและต่อทะเบียน
@@ -382,7 +386,7 @@ router.post('/', async (req, res) => {
                                         expiredAt: expired
                                     }, { transaction })
                                 } else {
-                                    console.log('แพ็คเก็จหมดอายุ รถไม่ได้จอด') //วันที่ผิด 30 วันแต่เพิ่มมาแค่ 1 และ
+                                    console.log('แพ็คเก็จหมดอายุ รถไม่ได้จอด')
                                     //กรณีแพ็คเกจหมดอายุ แต่รถไม่ได้ใช้บริการอยู่
                                     let expired = add(new Date(getDate), { days: getPackage.days })
                                     expired.setHours(0, 0, 0, 0)
