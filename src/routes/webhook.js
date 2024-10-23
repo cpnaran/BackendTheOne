@@ -410,6 +410,7 @@ router.post('/', async (req, res) => {
                                     await license.update({
                                         expiredAt: expired
                                     }, { transaction })
+                                    console.log(getTrans)
                                     await getTrans.update({
                                         paymentState: `SUCCESS`
                                     }, { transaction })
