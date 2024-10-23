@@ -3,7 +3,7 @@ import License from '../models/License.js'
 import Package from '../models/Package.js'
 import services from '../services/index.js'
 import feature from './index.js'
-import { subDays } from 'date-fns'
+import { differenceInDays } from 'date-fns'
 import Transaction from '../models/Transaction.js'
 import sequelize from '../../database.js';
 
@@ -23,14 +23,19 @@ export async function renewLicense(userId, packageId, license) {
             if (getLicense.status === true) {
                 //แพ็คเก็จหมดแต่ยังไม่ได้เอารถออก
                 const licenseExpired = getLicense.expiredAt
-                const amount = (subDays(dateTime, licenseExpired)) * 100
+                const amount = (differenceInDays(dateTime, licenseExpired)) * 100
 
                 await Transaction.create({
                     userId,
                     packageId: '30d27f15-0ace-4263-b789-1c851d20ac6c',
                     paymentState: 'PENDING',
-                    license
+                    license,
+                    amount
                 })
+                const packageData = {
+                    amount,
+                    package: `ชำระค่าปรับ ${differenceInDays(dateTime, licenseExpired)} วัน`
+                }
                 const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount })
                 await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData, license })
                 await transaction.commit()
