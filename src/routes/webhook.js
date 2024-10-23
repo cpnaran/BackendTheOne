@@ -406,12 +406,29 @@ router.post("/", async (req, res) => {
                     console.log("🚀 ~ file: webhook.js:557 ~ getPackage:", getPackage);
                     // if (qrCode) {
                     if (true) {
-                        /*    const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                                           data: qrCode.data, amount: getPackage.amount
-                                       }, {
-                                           headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
-                                       }) */
+                        let res
+                        if (getTrans.packageId === `30d27f15-0ace-4263-b789-1c851d20ac6c`) {
+                            const a = new Date()
+                            a.setHours(0, 0, 0, 0)
+                            const license = await License.findOne({
+                                where: {
+                                    license: getTrans.license
+                                }, attributes: [`expiredAt`]
+                            })
+                            const overDays = differenceInDays(a, license.expiredAt)
+                            const amount = overDays * 100
+                            /*     res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                                               data: qrCode.data, amount: getPackage.amount
+                                           }, {
+                                               headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                                           }) */
+                        }
 
+                        /*     res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                                               data: qrCode.data, amount: getTrans.amount
+                                           }, {
+                                               headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                                           }) */
                         //เช็ค response QR
                         //   const isValid = res.data.success
                         const isValid = true;

@@ -102,7 +102,7 @@ const scheduleNotifyTask = () => {
                                             },
                                             {
                                                 type: 'text',
-                                                text: `กรุณาชำระค่าปรับก่อนนำรถออก `,
+                                                text: `กรุณาชำระค่าปรับก่อนนำรถออก`,
                                                 size: 'md',
                                                 color: '#FF5551',
                                                 weight: 'bold',
