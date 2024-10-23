@@ -25,13 +25,16 @@ const Transaction = sequelize.define("Transaction", {
       model: "Packages", // Name of the target table
       key: "id", // Primary key column in Packages table
     },
+  },
+  packageId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: "Packages", // Name of the target table
+      key: "id", // Primary key column in Packages table
+    },
     onUpdate: "CASCADE", // Update transaction if package id changes
     onDelete: "CASCADE", // Set packageId to null if package is removed
-  },
-  amount: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-    defaultValue: 0,
   },
   paymentState: {
     type: DataTypes.ENUM("SUCCESS", "PENDING", "CANCEL", "FAILED"),
@@ -48,6 +51,10 @@ const Transaction = sequelize.define("Transaction", {
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: true,
+  },
+  amount: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0,
   },
 });
 
