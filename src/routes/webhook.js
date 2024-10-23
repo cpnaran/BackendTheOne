@@ -429,6 +429,7 @@ router.post('/', async (req, res) => {
                                             Authorization: `Bearer ${channelAccessToken}`,
                                         },
                                     })
+                                    transaction.commit()
                                     return `SUCCESS`
                                 } else if (license.expiredAt >= getDate) {
                                     console.log('แพ็คเก็จไม่หมด ต่อทะเบียน')
