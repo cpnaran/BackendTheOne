@@ -7,7 +7,7 @@ import { Jimp } from 'jimp';
 import Transaction from '../models/Transaction.js';
 import Package from '../models/Package.js';
 import sequelize from '../../database.js';
-import { add, differenceInDays } from 'date-fns';
+import { add, differenceInDays, interval } from 'date-fns';
 import User from '../models/User.js';
 import services from '../services/index.js';
 import feature from '../feature/index.js';
@@ -23,7 +23,8 @@ router.post('/', async (req, res) => {
     const transaction = await sequelize.transaction()
     try {
         let intentName = req.body.events[0]?.message?.text || undefined;
-        const method = intentName.split(' ') || null
+        console.log(intentName)
+        const method = intentName.split(' ') || undefined
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
         let response
         switch (method[0]) {
