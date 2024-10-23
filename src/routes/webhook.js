@@ -20,6 +20,7 @@ router.post('/', async (req, res) => {
     const replyToken = req.body.events[0].replyToken;
     const userId = req.body.events[0].source.userId;
     const channelAccessToken = process.env.ACCESS_TOKEN
+    const transaction = await sequelize.transaction()
     try {
         let intentName = req.body.events[0]?.message?.text || undefined;
         const method = intentName ? intentName.split(' ') : []
@@ -356,7 +357,6 @@ router.post('/', async (req, res) => {
                     })
                     // if (qrCode) {
                     if (true) {
-                        const transaction = await sequelize.transaction()
                         /*    const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
                                data: qrCode.data, amount: getPackage.amount
                            }, {
