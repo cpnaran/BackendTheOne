@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
     const transaction = await sequelize.transaction()
     try {
         let intentName = req.body.events[0]?.message?.text || undefined;
-        const method = intentName.split(' ')
+        const method = intentName.split(' ') || null
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
         let response
         switch (method[0]) {
