@@ -3,7 +3,7 @@ import { Op, where } from 'sequelize';
 import License from '../models/License.js';
 import { config } from 'dotenv';
 import axios from 'axios';
-import { subDays } from 'date-fns'
+import { differenceInDays } from 'date-fns'
 
 const sendLine = async (message, userId) => {
     config()
@@ -35,7 +35,7 @@ const sendLineAction = async (message, userId) => {
         'https://api.line.me/v2/bot/message/push',
         {
             to: userId,
-            messages: message
+            messages: [message]
         },
         {
             headers: {
@@ -46,10 +46,9 @@ const sendLineAction = async (message, userId) => {
     );
 }
 
-// สร้าง Cron Job ที่รันทุกนาที
 const scheduleNotifyTask = () => {
-    cron.schedule('0 11 * * *', async () => {
-        console.log('Running Notify job every day at 11 AM:', new Date());
+    cron.schedule('0 10 * * *', async () => {
+        console.log('Running Notify job every day at 10 AM:', new Date());
         try {
             const license = await License.findAll()
             const dateNow = new Date()
@@ -58,20 +57,94 @@ const scheduleNotifyTask = () => {
                 license.forEach(async (license) => {
                     const expirationDate = new Date(license.expiredAt);
                     expirationDate.setHours(0, 0, 0, 0)
-                    const daysRemaining = subDays(expirationDate, dateNow)
-                    if (daysRemaining <= 0 && license.status === true) {
-                        const message = `🔔 ทะเบียน ${license.license} หมดอายุแล้ว ถ้าต้องการนำรถออกจะต้องชำระค่าปรับวันละ 100 บาท หรือต่ออายุแพ็คเก็จ`;
-                        await sendLine(message, license.userId);
+                    const daysRemaining = differenceInDays(expirationDate, dateNow);
+                    if (daysRemaining < 0 && license.status === true) {
+                        const msg = {
+                            type: 'flex',
+                            altText: 'แจ้งเตือนชำระค่าปรับ',
+                            contents: {
+                                type: 'bubble',
+                                header: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: 'แพ็คเก็จหมดอายุ',
+                                            size: 'lg',
+                                            color: '#1DB446',
+                                            weight: 'bold',
+                                        },
+                                    ],
+                                },
+                                body: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [{
+                                        type: 'box',
+                                        layout: 'vertical',
+                                        spacing: 'sm',
+                                        contents: [
+                                            {
+                                                type: 'text',
+                                                text: `หมายเลขทะเบียน: ${license.license}`,
+                                                size: 'md',
+                                                color: '#333333',
+                                                weight: 'bold',
+                                            },
+                                            {
+                                                type: 'text',
+                                                text: `รถของท่านได้ใช้บริการเกินแพ็คเก็จแล้ว ท่านจะต้องชำระค่าส่วนเกิน ก่อนนำรถของท่านออก`,
+                                                size: 'sm',
+                                                wrap: true,
+                                                color: '#000000',
+                                                weight: 'regular',
+                                            },
+                                            {
+                                                type: 'text',
+                                                text: `กรุณาชำระค่าปรับก่อนนำรถออก `,
+                                                size: 'md',
+                                                color: '#FF5551',
+                                                weight: 'bold',
+                                            },
+                                            {
+                                                type: 'separator',
+                                                margin: 'sm',
+                                            },
+                                        ],
+                                    }],
+                                },
+                                footer: {
+                                    type: 'box',
+                                    layout: 'vertical',
+                                    contents: [
+                                        {
+                                            type: 'button',
+                                            style: 'primary',
+                                            color: '#1DB446',
+                                            action: {
+                                                type: 'message',
+                                                label: 'ชำระค่าปรับ',
+                                                text: `ชำระค่าปรับ ${license.license}`
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        }
+
+                        await sendLineAction(msg, license.userId);
                     }
-                    if (daysRemaining <= 3 && daysRemaining != 1 && license.status === true) {
+                    if (daysRemaining <= 2 && daysRemaining > 0) {
                         const message = `🔔 ทะเบียน ${license.license} กำลังจะหมดอายุในอีก ${daysRemaining} วัน! กรุณานำรถออกก่อนหรือ ต่ออายุก่อนวันหมดอายุ`;
                         await sendLine(message, license.userId);
-                    } else if (daysRemaining === 1 && license.status === true) {
+                    } else if (daysRemaining === 0) {
                         const message = `🔔 ทะเบียน ${license.license} กำลังจะหมดอายุภายในวันนี้ กรุณานำรถออกก่อนหรือ ต่ออายุก่อนวันหมดอายุ`;
                         await sendLine(message, license.userId);
                     }
                 });
             }
+            return
         } catch (error) {
             console.log(error)
         }

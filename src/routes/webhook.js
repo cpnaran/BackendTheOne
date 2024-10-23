@@ -7,7 +7,10 @@ import { Jimp } from 'jimp';
 import Transaction from '../models/Transaction.js';
 import Package from '../models/Package.js';
 import sequelize from '../../database.js';
-import { add } from 'date-fns';
+import { add, differenceInDays } from 'date-fns';
+import User from '../models/User.js';
+import services from '../services/index.js';
+import feature from '../feature/index.js';
 const router = express.Router();
 config()
 
@@ -17,11 +20,13 @@ router.post('/', async (req, res) => {
     const replyToken = req.body.events[0].replyToken;
     const userId = req.body.events[0].source.userId;
     const channelAccessToken = process.env.ACCESS_TOKEN
+    const transaction = await sequelize.transaction()
     try {
-        const intentName = req.body.events[0]?.message?.text || undefined;
+        let intentName = req.body.events[0]?.message?.text || undefined;
+        const method = intentName.split(' ')
         console.log('Intent ที่ถูกเรียกใช้งาน:', intentName);
         let response
-        switch (intentName) {
+        switch (method[0]) {
             case 'สมัครสมาชิก/จัดการ':
                 response = {
                     replyToken,
@@ -274,6 +279,54 @@ router.post('/', async (req, res) => {
                     },
                 });
                 break;
+            case 'ชำระค่าปรับ':
+                const user = await User.findOne({
+                    where: {
+                        userId
+                    }
+                })
+                if (!user) {
+                    const txt = {
+                        replyToken,
+                        messages: [
+                            {
+                                type: 'text',
+                                text: 'ไม่พบข้อมูลของผู้ใช้งานค่ะ 😊'
+                            },
+                        ]
+                    }
+                    await axios.post('https://api.line.me/v2/bot/message/reply', txt, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${channelAccessToken}`,
+                        },
+                    })
+                    return `UserId not found`
+                } else {
+                    const licenseData = await License.findOne({
+                        where: {
+                            license: method[1]
+                        }
+                    })
+                    const nowDate = new Date()
+                    nowDate.setHours(0, 0, 0, 0)
+                    const overDays = differenceInDays(new Date(licenseData.expiredAt), nowDate)
+                    await Transaction.create({
+                        userId,
+                        packageId: `30d27f15-0ace-4263-b789-1c851d20ac6c`,
+                        amount: (overDays * 100),
+                        paymentState: `PENDING`,
+                        license: licenseData.license
+                    }, { transaction })
+                    const packageData = {
+                        amount: (overDays * 100),
+                        package: `จ่ายค่าปรับ ${overDays} วัน`
+                    }
+                    const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: (overDays * 100) })
+                    await feature.webhook.replyUser({ userId, method: `สมัครสมาชิก`, imgUrl: urlQrPayment, packageData, license: licenseData.license })
+                    transaction.commit()
+                }
+                break;
             default:
                 if (req.body.events[0].message.type === 'image') {
                     const userId = req.body.events[0].source.userId;
@@ -459,6 +512,7 @@ router.post('/', async (req, res) => {
         res.json('SUCCESS');
     } catch (error) {
         console.log('>>>>>>>>>>>>>>>', error)
+        transaction.rollback()
         /* if (error.response.status === 400) {
             const data = {
                 replyToken,
