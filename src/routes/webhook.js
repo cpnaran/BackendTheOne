@@ -107,9 +107,22 @@ router.post("/", async (req, res) => {
           attributes: ["license", "expiredAt"],
         });
         if (!license) {
-          res.json({
-            fulfillmentText: "ขอโทษค่ะ ไม่พบหมายเลขทะเบียนของผู้ใช้งานในระบบ",
+          const txt = {
+            replyToken,
+            messages: [
+              {
+                type: "text",
+                text: "ไม่พบข้อมูลทะเบียนรถของผู้ใช้งานค่ะ 😊",
+              },
+            ],
+          };
+          await axios.post("https://api.line.me/v2/bot/message/reply", txt, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${channelAccessToken}`,
+            },
           });
+          return `license not found`;
         }
         // เตรียมข้อมูลภายใน body ของ Flex Message
         const bodyContents = license.map((item) => ({
