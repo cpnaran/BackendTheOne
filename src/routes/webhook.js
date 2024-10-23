@@ -310,7 +310,7 @@ router.post('/', async (req, res) => {
                     })
                     const nowDate = new Date()
                     nowDate.setHours(0, 0, 0, 0)
-                    const overDays = differenceInDays(new Date(licenseData.expiredAt), nowDate)
+                    const overDays = differenceInDays(nowDate, new Date(licenseData.expiredAt))
                     await Transaction.create({
                         userId,
                         packageId: `30d27f15-0ace-4263-b789-1c851d20ac6c`,
