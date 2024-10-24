@@ -377,19 +377,19 @@ router.post("/", async (req, res) => {
                         "******* inside  if (req.body.events[0].message.type === 'image') "
                     );
                     const userId = req.body.events[0].source.userId;
-                    /* const messageId = req.body.events[0].message.id;
-                               const responseImg = await axios.get(`https://api-data.line.me/v2/bot/message/${messageId}/content`, {
-                                   headers: { 'Authorization': `Bearer ${channelAccessToken}` },
-                                   responseType: 'arraybuffer'
-                               })
-                               const imageBuffer = Buffer.from(responseImg.data);
-                               // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
-                               const image = await Jimp.read(imageBuffer);
-                               const { data, width, height } = image.bitmap;
-           
-                               // อ่าน QR code ด้วย jsQR
-                               const qrCode = jsQR(data, width, height);
-           */
+                    const messageId = req.body.events[0].message.id;
+                    const responseImg = await axios.get(`https://api-data.line.me/v2/bot/message/${messageId}/content`, {
+                        headers: { 'Authorization': `Bearer ${channelAccessToken}` },
+                        responseType: 'arraybuffer'
+                    })
+                    const imageBuffer = Buffer.from(responseImg.data);
+                    // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
+                    const image = await Jimp.read(imageBuffer);
+                    const { data, width, height } = image.bitmap;
+
+                    // อ่าน QR code ด้วย jsQR
+                    const qrCode = jsQR(data, width, height);
+
                     const getTrans = await Transaction.findOne({
                         where: {
                             userId,
@@ -404,17 +404,32 @@ router.post("/", async (req, res) => {
                         },
                     });
                     console.log("🚀 ~ file: webhook.js:557 ~ getPackage:", getPackage);
-                    // if (qrCode) {
-                    if (true) {
-                        /*    const res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                                           data: qrCode.data, amount: getPackage.amount
-                                       }, {
-                                           headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
-                                       }) */
-
+                    if (qrCode) {
+                        let res
+                        if (getTrans.packageId === `30d27f15-0ace-4263-b789-1c851d20ac6c`) {
+                            const a = new Date()
+                            a.setHours(0, 0, 0, 0)
+                            const license = await License.findOne({
+                                where: {
+                                    license: getTrans.license
+                                }, attributes: [`expiredAt`]
+                            })
+                            const overDays = differenceInDays(a, license.expiredAt)
+                            const amount = overDays * 100
+                            res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                                data: qrCode.data, amount
+                            }, {
+                                headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                            })
+                        } else {
+                            res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                                data: qrCode.data, amount: getTrans.amount
+                            }, {
+                                headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                            })
+                        }
                         //เช็ค response QR
-                        //   const isValid = res.data.success
-                        const isValid = true;
+                        const isValid = res.data.success
                         //ตอบกลับ user
                         if (isValid) {
                             const data = {
@@ -437,7 +452,6 @@ router.post("/", async (req, res) => {
                             let dateNow = new Date();
                             dateNow = add(dateNow, { days: getPackage.days });
                             dateNow.setHours(0, 0, 0, 0);
-                            //const expiredAt = dateNow.toISOString()
                             const [license, created] = await License.findOrCreate({
                                 where: { license: getTrans.license },
                                 defaults: {
