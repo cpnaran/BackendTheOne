@@ -11,6 +11,7 @@ router.get("/Package-summary", getPackageSummary);
 router.post("/add-package", createPakage);
 router.put("/update-package", updatePackage);
 router.delete("/delete-package", deletePackage);
+router.get("/Package/list", getPackageTable);
 
 async function getMonthlyRevenue(req, res, next) {
   try {
@@ -88,3 +89,13 @@ async function deletePackage(req, res, next) {
 }
 
 export default router;
+
+async function getPackageTable(req, res) {
+  try {
+    const response = await feature.backOffice.getPackageTable();
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
