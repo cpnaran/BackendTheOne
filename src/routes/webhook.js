@@ -82,7 +82,7 @@ router.post("/", async (req, res) => {
                                             {
                                                 type: 'uri',
                                                 label: 'ชำระค่าปรับ',
-                                                uri: `${process.env.FRONT_END_BASE_URL}/fine-payment?userId=${userId}&token=${replyToken}`,
+                                                uri: `${process.env.FRONT_END_BASE_URL}/pay?userId=${userId}&token=${replyToken}`,
                                             },
                                         ],
                                     },
@@ -314,6 +314,7 @@ router.post("/", async (req, res) => {
                         userId,
                     },
                 });
+
                 if (!user) {
                     const txt = {
                         replyToken,
@@ -343,6 +344,23 @@ router.post("/", async (req, res) => {
                         nowDate,
                         new Date(licenseData.expiredAt)
                     );
+                    if (overDays <= 0) {
+                        const txt = {
+                            replyToken,
+                            messages: [
+                                {
+                                    type: "text",
+                                    text: "ผู้ใช้งานยังไม่มีค่าปรับต้องชำระค่ะ 😊",
+                                },
+                            ],
+                        };
+                        await axios.post("https://api.line.me/v2/bot/message/reply", txt, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${channelAccessToken}`,
+                            },
+                        });
+                    }
                     await Transaction.create(
                         {
                             userId,
