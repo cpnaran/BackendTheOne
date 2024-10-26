@@ -110,5 +110,5 @@ export async function finePayment(userId, license) {
     await feature.webhook.replyUser({ userId, method: 'สมัครสมาชิก', imgUrl: urlQrPayment, packageData, license })
     console.log('Reply message to user')
     await transaction.commit();
-    return `SUCCESS`
+    return createdTransaction
 }
