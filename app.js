@@ -21,11 +21,12 @@ scheduleOptionsTask();
 scheduleNotifyTask();
 
 //import routes
-import webHookRoutes from './src/routes/webhook.js';
-import userRoutes from './src/routes/user.js';
-import optionRoutes from './src/routes/option.js'
-import licenseRoutes from './src/routes/license.js'
-import anprRoutes from './src/routes/anpr.js'
+import webHookRoutes from "./src/routes/webhook.js";
+import userRoutes from "./src/routes/user.js";
+import optionRoutes from "./src/routes/option.js";
+import licenseRoutes from "./src/routes/license.js";
+import anprRoutes from "./src/routes/anpr.js";
+import backOfficeRoutes from "./src/routes/backOffice.js";
 console.log(new Date());
 
 app.use(cors());
@@ -38,11 +39,12 @@ app.get("/", (req, res) => {
   res.json({ messege: "success" });
 });
 
-app.use("/anpr", anprRoutes)
-app.use('/webhook', webHookRoutes);
-app.use('/user', userRoutes)
-app.use('/options', optionRoutes)
-app.use('/license', licenseRoutes)
+app.use("/anpr", anprRoutes);
+app.use("/webhook", webHookRoutes);
+app.use("/user", userRoutes);
+app.use("/options", optionRoutes);
+app.use("/license", licenseRoutes);
+app.use("/back-office/", backOfficeRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -1,0 +1,8 @@
+const path = require("path");
+// npx sequelize-cli migration:generate --name test
+//NODE_ENV=production npx sequelize-cli db:migrate
+
+module.exports = {
+  config: path.resolve("src", "config", "config.json"), // Sequelize config file
+  "migrations-path": path.resolve("src", "migrations"),
+};
