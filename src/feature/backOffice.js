@@ -12,8 +12,10 @@ import {
   addDays,
   addHours,
   getMonth,
+  getHours,
 } from "date-fns";
 import Package from "../models/Package.js";
+import LogData from "../models/LogData.js";
 
 export async function getMonthlyRevenue(filter = null) {
   let now_date = new Date();
@@ -272,4 +274,118 @@ export const getPackageTable = async () => {
     },
   });
   return Packages;
+};
+
+export const getCarGraph = async (filter_year = null) => {
+  let graph = {
+    Jan: 0,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    May: 0,
+    Jun: 0,
+    Jul: 0,
+    Aug: 0,
+    Sep: 0,
+    Oct: 0,
+    Nov: 0,
+    Dec: 0,
+  };
+
+  let now_date = new Date();
+
+  filter_year
+    ? (now_date = new Date(`${filter_year}/01/5`))
+    : (now_date = now_date);
+
+  // start from  yyyy-01-01T00:00:00.000Z (UTC+7)
+  const start_of_year = addHours(startOfYear(now_date), 7);
+
+  const end_of_year = endOfYear(now_date);
+
+  const data = await LogData.findAll({
+    where: {
+      [Op.and]: [
+        { checkInAt: { [Op.gte]: start_of_year } },
+        { checkInAt: { [Op.lte]: end_of_year } },
+      ],
+    },
+    raw: true,
+  });
+
+  // Loop through the data and add the transaction amounts to the corresponding month
+  data.forEach((log) => {
+    // Get month (0-11)
+    const month = getMonth(log.checkInAt);
+
+    // Switch case for each month
+    switch (month) {
+      case 0:
+        graph.Jan += 1;
+        break;
+      case 1:
+        graph.Feb += 1;
+        break;
+      case 2:
+        graph.Mar += 1;
+        break;
+      case 3:
+        graph.Apr += 1;
+        break;
+      case 4:
+        graph.May += 1;
+        break;
+      case 5:
+        graph.Jun += 1;
+        break;
+      case 6:
+        graph.Jul += 1;
+        break;
+      case 7:
+        graph.Aug += 1;
+        break;
+      case 8:
+        graph.Sep += 1;
+        break;
+      case 9:
+        graph.Oct += 1;
+        break;
+      case 10:
+        graph.Nov += 1;
+        break;
+      case 11:
+        graph.Dec += 1;
+        break;
+      default:
+        console.error("Invalid month:", month);
+    }
+  });
+
+  return graph;
+};
+
+export const getUsageTime = async () => {
+  const data_arr = await LogData.findAll({
+    raw: true,
+    attributes: ["checkInAt"],
+  });
+
+  let graph = {};
+  for (let i = 0; i < 24; i++) {
+    graph[i.toString().padStart(2, "0")] = 0;
+  }
+
+  data_arr.forEach((data) => {
+    let hour = getHours(data.checkInAt);
+    let hourKey = hour.toString().padStart(2, "0");
+    graph[hourKey]++;
+  });
+
+  const totalHours = data_arr.length;
+
+  for (let hour in graph) {
+    graph[hour] = ((graph[hour] / totalHours) * 100).toFixed(2);
+  }
+
+  return graph;
 };
