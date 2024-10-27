@@ -6,12 +6,14 @@ const router = express.Router();
 router.get("/Revenue", getMonthlyRevenue);
 router.get("/Revenue/graph", getGraph);
 router.get("/Total-car", getTotalCar);
+router.get("/Total-car/graph", getCarGraph);
 router.get("/Package-summary", getPackageSummary);
 
 router.post("/add-package", createPakage);
 router.put("/update-package", updatePackage);
 router.delete("/delete-package", deletePackage);
 router.get("/Package/list", getPackageTable);
+router.get("/Usage-Time", getUsageTime);
 
 async function getMonthlyRevenue(req, res, next) {
   try {
@@ -88,7 +90,16 @@ async function deletePackage(req, res, next) {
   }
 }
 
-export default router;
+async function getCarGraph(req, res, next) {
+  try {
+    const { year } = req.query;
+    const response = await feature.backOffice.getCarGraph(year);
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
 
 async function getPackageTable(req, res) {
   try {
@@ -99,3 +110,15 @@ async function getPackageTable(req, res) {
     res.status(400).send(error.message);
   }
 }
+
+async function getUsageTime(req, res) {
+  try {
+    const response = await feature.backOffice.getUsageTime();
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+
+export default router;
