@@ -384,7 +384,7 @@ export const getUsageTime = async () => {
   const totalHours = data_arr.length;
 
   for (let hour in graph) {
-    graph[hour] = ((graph[hour] / totalHours) * 100).toFixed(2);
+    graph[hour] = Math.round((graph[hour] / totalHours) * 100);
   }
 
   return graph;
