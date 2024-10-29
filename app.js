@@ -27,6 +27,7 @@ import optionRoutes from "./src/routes/option.js";
 import licenseRoutes from "./src/routes/license.js";
 import anprRoutes from "./src/routes/anpr.js";
 import backOfficeRoutes from "./src/routes/backOffice.js";
+import { authenticateToken } from "./src/middleware/auth.js";
 console.log(new Date());
 
 app.use(cors());
@@ -44,7 +45,7 @@ app.use("/webhook", webHookRoutes);
 app.use("/user", userRoutes);
 app.use("/options", optionRoutes);
 app.use("/license", licenseRoutes);
-app.use("/back-office/", backOfficeRoutes);
+app.use("/back-office/", authenticateToken, backOfficeRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
