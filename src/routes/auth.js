@@ -10,11 +10,21 @@ router.post("/", LoginBo);
 async function LoginBo(req, res, next) {
   try {
     const { username, password } = req.body;
+    console.log("🚀 ~ LoginBo ~ password:", password);
+    console.log("🚀 ~ LoginBo ~ username:", username);
     console.log(
       "🚀 ~ LoginBo ~ process.env.AUTH_USERNAME:",
-      process.env.AUTH_USERNAME
+      process.env.AUTH_PASSWORD
     );
+    console.log(
+      "🚀 ~ LoginBo ~ process.env.AUTH_USERNAME:",
+      process.env.AUTH_PASSWORD
+    );
+
     // Check credentials from .env
+    if (bcrypt.compareSync(password, process.env.AUTH_PASSWORD)) {
+      console.log("trueeeeeeeee");
+    }
     if (
       username === process.env.AUTH_USERNAME &&
       bcrypt.compareSync(password, process.env.AUTH_PASSWORD)
