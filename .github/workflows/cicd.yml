@@ -66,6 +66,9 @@ jobs:
           echo "API_KEY_IMG_BB=${{ secrets.API_KEY_IMG_BB }}" >> .env
           echo "API_KEY_SLIP_OK=${{ secrets.API_KEY_SLIP_OK }}" >> .env
           echo "URL_SLIP_OK=${{ secrets.URL_SLIP_OK }}" >> .env
+          echo "AUTH_USERNAME=${{ secrets.AUTH_USERNAME }}" >> .env
+          echo "AUTH_PASSWORD=${{ secrets.AUTH_PASSWORD }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
       - name: Run Docker Container
         run: docker run --restart=always --env-file .env -d -p 3000:3000 --name backendtheone-container theoneparking/backendtheone
