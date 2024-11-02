@@ -1,11 +1,9 @@
 import express, { response } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+
 import feature from "../feature/index.js";
 
 const router = express.Router();
 
-router.get("/Login", Login);
 router.get("/Revenue", getMonthlyRevenue);
 router.get("/Revenue/graph", getGraph);
 router.get("/Total-car", getTotalCar);
@@ -17,27 +15,6 @@ router.put("/update-package", updatePackage);
 router.delete("/delete-package", deletePackage);
 router.get("/Package/list", getPackageTable);
 router.get("/Usage-Time", getUsageTime);
-
-async function Login(req, res, next) {
-  try {
-    const { username, password } = req.body;
-
-    // Check credentials from .env
-    if (
-      username === process.env.AUTH_USERNAME &&
-      bcrypt.compareSync(password, process.env.AUTH_PASSWORD)
-    ) {
-      const user = { name: username };
-      const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
-      return res.json({ token });
-    }
-
-    res.status(401).json({ message: "Invalid credentials" });
-  } catch (error) {
-    console.error("Error processing request:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-}
 
 async function getMonthlyRevenue(req, res, next) {
   try {
@@ -106,6 +83,7 @@ async function updatePackage(req, res, next) {
 async function deletePackage(req, res, next) {
   try {
     const { id } = req.body;
+
     const response = await feature.backOffice.deletePackage(id);
     res.json("deleted");
   } catch (error) {
