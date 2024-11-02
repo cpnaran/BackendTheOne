@@ -10,24 +10,15 @@ router.post("/", LoginBo);
 async function LoginBo(req, res, next) {
   try {
     const { username, password } = req.body;
-    console.log("🚀 ~ LoginBo ~ password:", password);
-    console.log("🚀 ~ LoginBo ~ username:", username);
-    console.log(
-      "🚀 ~ LoginBo ~ process.env.AUTH_USERNAME:",
-      process.env.AUTH_PASSWORD
-    );
-    console.log(
-      "🚀 ~ LoginBo ~ process.env.AUTH_USERNAME:",
-      process.env.AUTH_PASSWORD
-    );
-
+    const hashedPassword = Buffer.from(
+      process.env.AUTH_PASSWORD,
+      "base64"
+    ).toString("ascii");
     // Check credentials from .env
-    if (bcrypt.compareSync(password, process.env.AUTH_PASSWORD)) {
-      console.log("trueeeeeeeee");
-    }
+
     if (
       username === process.env.AUTH_USERNAME &&
-      bcrypt.compareSync(password, process.env.AUTH_PASSWORD)
+      bcrypt.compareSync(password, hashedPassword)
     ) {
       const user = { name: username };
       const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
