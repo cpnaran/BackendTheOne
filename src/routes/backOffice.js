@@ -12,7 +12,7 @@ router.get("/Package-summary", getPackageSummary);
 
 router.post("/add-package", createPakage);
 router.put("/update-package", updatePackage);
-router.delete("/delete-package", deletePackage);
+router.delete("/delete-package/:id", deletePackage);
 router.get("/Package/list", getPackageTable);
 router.get("/Usage-Time", getUsageTime);
 
@@ -82,8 +82,7 @@ async function updatePackage(req, res, next) {
 }
 async function deletePackage(req, res, next) {
   try {
-    const { id } = req.body;
-
+    const { id } = req.params;
     const response = await feature.backOffice.deletePackage(id);
     res.json("deleted");
   } catch (error) {
