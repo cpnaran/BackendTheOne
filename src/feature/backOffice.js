@@ -20,7 +20,9 @@ import LogData from "../models/LogData.js";
 export async function getMonthlyRevenue(filter = null) {
   let now_date = new Date();
   const year = getYear(now_date);
-  filter ? (now_date = new Date(`${year}/${filter}/5`)) : (now_date = now_date);
+  filter
+    ? (now_date = new Date(`${year}/${filter + 1}/5`))
+    : (now_date = now_date);
 
   const start_of_month = startOfMonth(now_date);
 
