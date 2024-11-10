@@ -184,22 +184,16 @@ export const getPackageSummary = async (filter_year = null) => {
     ],
     raw: true,
   });
-
-  let most_used = {
-    package: "",
-    amount: 0,
-  };
-  if (count.length > 0) {
-    const maxCountObj = count.reduce((max, current) => {
-      return current.count > max.count ? current : max;
+  let resp = [];
+  count.forEach((obj) => {
+    resp.push({
+      packageId: obj.packageId,
+      count: obj.count,
+      package_name: obj["Package.package"],
     });
-    most_used = {
-      package: maxCountObj["Package.package"],
-      amount: maxCountObj.count,
-    };
-  }
+  });
 
-  return most_used;
+  return resp;
 };
 
 export const createPackage = async (data = {}) => {
