@@ -4,6 +4,7 @@ import * as license from "./license.js";
 import * as webhook from "./webhook.js";
 import * as logData from "./logData.js";
 import * as backOffice from "./backOffice.js";
+import * as auth from "./auth.js";
 
 export default {
   user,
@@ -14,4 +15,5 @@ export default {
   // package,
   // license,
   backOffice,
+  auth,
 };
