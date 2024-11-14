@@ -14,3 +14,16 @@ export function authenticateToken(req, res, next) {
     next();
   });
 }
+
+export const jwtRefreshTokenValidate = (req, res, next) => {
+  if (!req.headers["authorization"]) return res.sendStatus(401);
+  const token = req.headers["authorization"];
+
+  jwt.verify(token, process.env.REFRESH_JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ message: "Invalid token." });
+
+    req.username = decoded;
+
+    next();
+  });
+};

@@ -20,7 +20,9 @@ import LogData from "../models/LogData.js";
 export async function getMonthlyRevenue(filter = null) {
   let now_date = new Date();
   const year = getYear(now_date);
-  filter ? (now_date = new Date(`${year}/${filter}/5`)) : (now_date = now_date);
+  filter
+    ? (now_date = new Date(`${year}/${filter + 1}/5`))
+    : (now_date = now_date);
 
   const start_of_month = startOfMonth(now_date);
 
@@ -182,22 +184,16 @@ export const getPackageSummary = async (filter_year = null) => {
     ],
     raw: true,
   });
-
-  let most_used = {
-    package: "",
-    amount: 0,
-  };
-  if (count.length > 0) {
-    const maxCountObj = count.reduce((max, current) => {
-      return current.count > max.count ? current : max;
+  let resp = [];
+  count.forEach((obj) => {
+    resp.push({
+      packageId: obj.packageId,
+      count: obj.count,
+      package_name: obj["Package.package"],
     });
-    most_used = {
-      package: maxCountObj["Package.package"],
-      amount: maxCountObj.count,
-    };
-  }
+  });
 
-  return most_used;
+  return resp;
 };
 
 export const createPackage = async (data = {}) => {
