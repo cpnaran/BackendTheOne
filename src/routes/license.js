@@ -24,6 +24,7 @@ async function finePayment(req, res, next) {
         const { userId } = req.query
         const { license } = req.body
         const result = await features.license.finePayment(userId, license)
+        res.json(result)
     } catch (error) {
         console.error(`Error processing request:`, error);
         res.status(400).send(error.message)
