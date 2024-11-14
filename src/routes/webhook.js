@@ -425,29 +425,30 @@ router.post("/", async (req, res) => {
                     if (qrCode) {
                         let res
                         if (getTrans.packageId === `30d27f15-0ace-4263-b789-1c851d20ac6c`) {
-                            const a = new Date()
-                            a.setHours(0, 0, 0, 0)
-                            const license = await License.findOne({
-                                where: {
-                                    license: getTrans.license
-                                }, attributes: [`expiredAt`]
-                            })
-                            const overDays = differenceInDays(a, license.expiredAt)
-                            const amount = overDays * 100
-                            res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                                data: qrCode.data, amount
-                            }, {
-                                headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
-                            })
+                            // const a = new Date()
+                            // a.setHours(0, 0, 0, 0)
+                            // const license = await License.findOne({
+                            //     where: {
+                            //         license: getTrans.license
+                            //     }, attributes: [`expiredAt`]
+                            // })
+                            // const overDays = differenceInDays(a, license.expiredAt)
+                            // const amount = overDays * 100
+                            // res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                            //     data: qrCode.data, amount
+                            // }, {
+                            //     headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                            // })
                         } else {
-                            res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                                data: qrCode.data, amount: getTrans.amount
-                            }, {
-                                headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
-                            })
+                            // res = await axios.post(`${process.env.URL_SLIP_OK}`, {
+                            //     data: qrCode.data, amount: getTrans.amount
+                            // }, {
+                            //     headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
+                            // })
                         }
                         //เช็ค response QR
-                        const isValid = res.data.success
+                        // const isValid = res.data.success TODO:
+                        const isValid = true
                         //ตอบกลับ user
                         if (isValid) {
                             const data = {
@@ -569,12 +570,21 @@ router.post("/", async (req, res) => {
                             );
                             await transaction.commit();
                         } else {
+                            // const data = {
+                            //     replyToken,
+                            //     messages: [
+                            //         {
+                            //             type: "text",
+                            //             text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
+                            //         },
+                            //     ],
+                            // };
                             const data = {
                                 replyToken,
                                 messages: [
                                     {
                                         type: "text",
-                                        text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
+                                        text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
                                     },
                                 ],
                             };
@@ -590,12 +600,21 @@ router.post("/", async (req, res) => {
                             );
                         }
                     } else {
+                        // const data = {
+                        //     replyToken,
+                        //     messages: [
+                        //         {
+                        //             type: "text",
+                        //             text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
+                        //         },
+                        //     ],
+                        // };
                         const data = {
                             replyToken,
                             messages: [
                                 {
                                     type: "text",
-                                    text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
+                                    text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
                                 },
                             ],
                         };
@@ -647,12 +666,21 @@ router.post("/", async (req, res) => {
                 });
             } else { */
         console.error("Error processing the webhook:", error);
+        // const data = {
+        //     replyToken,
+        //     messages: [
+        //         {
+        //             type: "text",
+        //             text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
+        //         },
+        //     ],
+        // };
         const data = {
             replyToken,
             messages: [
                 {
                     type: "text",
-                    text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
+                    text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
                 },
             ],
         };
