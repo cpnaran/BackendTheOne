@@ -4,6 +4,10 @@ import License from '../models/License.js';
 import sequelize from '../../database.js';
 import { Op } from 'sequelize';
 import axios from 'axios';
+import { config } from 'dotenv';
+
+config()
+const channelAccessToken = process.env.ACCESS_TOKEN
 
 export async function createLogData(deviceId, params) {
     const vehicleTypeMap = {
