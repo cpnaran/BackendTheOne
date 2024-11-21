@@ -135,10 +135,18 @@ const scheduleNotifyTask = () => {
 
                         await sendLineAction(msg, license.userId);
                     }
-                    if (daysRemaining <= 2 && daysRemaining > 0) {
+                    if (daysRemaining === 1) {
                         const message = `🔔 ทะเบียน ${license.license} กำลังจะหมดอายุในอีก ${daysRemaining} วัน! กรุณานำรถออกก่อนหรือ ต่ออายุก่อนวันหมดอายุ`;
                         await sendLine(message, license.userId);
-                    } else if (daysRemaining === 0) {
+                    } else if (daysRemaining === 3) {
+                        const message = `🔔 ทะเบียน ${license.license} กำลังจะหมดอายุในอีก ${daysRemaining} วัน! กรุณานำรถออกก่อนหรือ ต่ออายุก่อนวันหมดอายุ`;
+                        await sendLine(message, license.userId);
+                    }
+                    else if (daysRemaining === 7) {
+                        const message = `🔔 ทะเบียน ${license.license} กำลังจะหมดอายุในอีก ${daysRemaining} วัน! กรุณานำรถออกก่อนหรือ ต่ออายุก่อนวันหมดอายุ`;
+                        await sendLine(message, license.userId);
+                    }
+                    else if (daysRemaining === 0) {
                         const message = `🔔 ทะเบียน ${license.license} กำลังจะหมดอายุภายในวันนี้ กรุณานำรถออกก่อนหรือ ต่ออายุก่อนวันหมดอายุ`;
                         await sendLine(message, license.userId);
                     }
