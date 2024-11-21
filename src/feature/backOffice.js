@@ -385,3 +385,45 @@ export const getUsageTime = async () => {
 
   return graph;
 };
+
+export const getCarList = async (queryParams = {}) => {
+  const { page, per_page } = queryParams;
+
+  // Calculate limit and offset
+  const limit = per_page ? parseInt(per_page, 10) : undefined;
+  const offset =
+    page && per_page
+      ? (parseInt(page, 10) - 1) * parseInt(per_page, 10)
+      : undefined;
+
+  // Define query options
+  const queryOptions = {};
+  if (limit !== undefined) queryOptions.limit = limit;
+  if (offset !== undefined) queryOptions.offset = offset;
+
+  // Perform the query
+  const list = await License.findAll(queryOptions);
+
+  return list;
+};
+
+export const demote = async (id) => {
+  if (!id) {
+    throw new Error("id is required!");
+  }
+  const transaction = await sequelize.transaction();
+  try {
+    await License.update(
+      { JsonData: null },
+      {
+        where: { id },
+        transaction,
+      }
+    );
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Error occurred during package deletion:", error);
+    throw error;
+  }
+};

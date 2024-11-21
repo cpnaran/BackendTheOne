@@ -16,6 +16,8 @@ router.delete("/delete-package/:id", deletePackage);
 router.get("/Package/list", getPackageTable);
 router.get("/Usage-Time", getUsageTime);
 
+router.get("/Car/list", getCarList);
+
 async function getMonthlyRevenue(req, res, next) {
   try {
     // const { deviceId, params } = req.body;
@@ -115,6 +117,17 @@ async function getPackageTable(req, res) {
 async function getUsageTime(req, res) {
   try {
     const response = await feature.backOffice.getUsageTime();
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+
+async function getCarList(req, res) {
+  try {
+    const { page, per_page } = req.params;
+    const response = await feature.backOffice.getCarList({ page, per_page });
     res.json(response);
   } catch (error) {
     console.error("Error processing request:", error);
