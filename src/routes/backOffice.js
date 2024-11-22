@@ -17,6 +17,9 @@ router.get("/Package/list", getPackageTable);
 router.get("/Usage-Time", getUsageTime);
 
 router.get("/Car/list", getCarList);
+router.put("/Car/Promote", promote);
+router.put("/Car/Demote", demote);
+router.put("/Car/Add-days", addDays);
 
 async function getMonthlyRevenue(req, res, next) {
   try {
@@ -128,6 +131,37 @@ async function getCarList(req, res) {
   try {
     const { page, per_page } = req.params;
     const response = await feature.backOffice.getCarList({ page, per_page });
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+async function demote(req, res) {
+  try {
+    const { id } = req.body;
+    const response = await feature.backOffice.demote(id);
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+
+async function promote(req, res) {
+  try {
+    const { id, package_id } = req.body;
+    const response = await feature.backOffice.promote(id, package_id);
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+async function addDays(req, res) {
+  try {
+    const { id } = req.body;
+    const response = await feature.backOffice.Add15Days(id);
     res.json(response);
   } catch (error) {
     console.error("Error processing request:", error);
