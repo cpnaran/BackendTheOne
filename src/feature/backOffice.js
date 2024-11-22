@@ -503,3 +503,9 @@ export const Add15Days = async (id) => {
     throw error;
   }
 };
+
+export const getPremiumoptions = async () => {
+  const list = await Package.findAll({ where: { packageType: "PREMIUM" } });
+
+  return list;
+};
