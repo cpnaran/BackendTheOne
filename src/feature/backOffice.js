@@ -408,9 +408,14 @@ export const getCarList = async ({ page, per_page, license }) => {
     };
   }
 
-  const list = await License.findAll(queryOptions);
+  const list = await License.findAndCountAll(queryOptions);
+  let resp = {
+    data: list.rows,
+    totalCount: list.count,
+    totalPage: Math.ceil(per_page ? list.count / parseInt(per_page) : 0),
+  };
 
-  return list;
+  return resp;
 };
 
 export const demote = async (id) => {
