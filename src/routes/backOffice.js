@@ -130,8 +130,13 @@ async function getUsageTime(req, res) {
 
 async function getCarList(req, res) {
   try {
-    const { page, per_page } = req.params;
-    const response = await feature.backOffice.getCarList({ page, per_page });
+    const { page, per_page, license } = req.query;
+
+    const response = await feature.backOffice.getCarList({
+      page,
+      per_page,
+      license,
+    });
     res.json(response);
   } catch (error) {
     console.error("Error processing request:", error);

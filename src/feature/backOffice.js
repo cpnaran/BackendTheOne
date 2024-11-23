@@ -387,9 +387,7 @@ export const getUsageTime = async () => {
   return graph;
 };
 
-export const getCarList = async (queryParams = {}) => {
-  const { page, per_page } = queryParams;
-
+export const getCarList = async ({ page, per_page, license }) => {
   // Calculate limit and offset
   const limit = per_page ? parseInt(per_page, 10) : undefined;
   const offset =
@@ -402,7 +400,14 @@ export const getCarList = async (queryParams = {}) => {
   if (limit !== undefined) queryOptions.limit = limit;
   if (offset !== undefined) queryOptions.offset = offset;
 
-  // Perform the query
+  if (license) {
+    queryOptions.where = {
+      license: {
+        [Op.like]: `%${license}%`,
+      },
+    };
+  }
+
   const list = await License.findAll(queryOptions);
 
   return list;
