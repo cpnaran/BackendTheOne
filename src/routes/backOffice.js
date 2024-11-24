@@ -15,6 +15,12 @@ router.put("/update-package", updatePackage);
 router.delete("/delete-package/:id", deletePackage);
 router.get("/Package/list", getPackageTable);
 router.get("/Usage-Time", getUsageTime);
+//manage api
+router.get("/Options/Premium", getPremiuimOptions);
+router.get("/Car/list", getCarList);
+router.put("/Car/Promote", promote);
+router.put("/Car/Demote", demote);
+router.put("/Car/Add-days", addDays);
 
 async function getMonthlyRevenue(req, res, next) {
   try {
@@ -115,6 +121,62 @@ async function getPackageTable(req, res) {
 async function getUsageTime(req, res) {
   try {
     const response = await feature.backOffice.getUsageTime();
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+
+async function getCarList(req, res) {
+  try {
+    const { page, per_page, license } = req.query;
+
+    const response = await feature.backOffice.getCarList({
+      page,
+      per_page,
+      license,
+    });
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+async function demote(req, res) {
+  try {
+    const { id } = req.body;
+    const response = await feature.backOffice.demote(id);
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+
+async function promote(req, res) {
+  try {
+    const { id, package_id } = req.body;
+    const response = await feature.backOffice.promote(id, package_id);
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+async function addDays(req, res) {
+  try {
+    const { id } = req.body;
+    const response = await feature.backOffice.Add15Days(id);
+    res.json(response);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+async function getPremiuimOptions(req, res) {
+  try {
+    const response = await feature.backOffice.getPremiumoptions();
     res.json(response);
   } catch (error) {
     console.error("Error processing request:", error);
