@@ -17,6 +17,7 @@ import {
 } from "date-fns";
 import Package from "../models/Package.js";
 import LogData from "../models/LogData.js";
+import User from "../models/User.js";
 
 export async function getMonthlyRevenue(filter = null) {
   let now_date = new Date();
@@ -407,10 +408,35 @@ export const getCarList = async ({ page, per_page, license }) => {
       },
     };
   }
-
+  queryOptions.raw = true;
   const list = await License.findAndCountAll(queryOptions);
+
+  const userIds = list.rows.map((element) => element.userId);
+
+  const user_list = await User.findAll({
+    where: {
+      userId: {
+        [Op.in]: userIds,
+      },
+    },
+    raw: true,
+  });
+
+  let new_obj_licenses = {};
+  for (const license of list.rows) {
+    new_obj_licenses[license.userId] = license;
+  }
+  let result = [];
+
+  for (const user of user_list) {
+    if (new_obj_licenses[user.userId]) {
+      new_obj_licenses[user.userId].fullName = user.fullName;
+      result.push(new_obj_licenses[user.userId]);
+    }
+  }
+
   let resp = {
-    data: list.rows,
+    data: result,
     totalCount: list.count,
     totalPage: Math.ceil(per_page ? list.count / parseInt(per_page) : 0),
   };
