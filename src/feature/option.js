@@ -13,7 +13,7 @@ export async function getOptionPackage(userId) {
         where: {
             isActive: true,
             packageType: {
-                in: [
+                [Op.in]: [
                     'STANDARD', 'PROMOTION'
                 ]
             }
