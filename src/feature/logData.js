@@ -5,6 +5,7 @@ import sequelize from '../../database.js';
 import { Op } from 'sequelize';
 import axios from 'axios';
 import { config } from 'dotenv';
+import crypto from 'crypto';
 
 config()
 const channelAccessToken = process.env.ACCESS_TOKEN
@@ -98,9 +99,8 @@ export async function createLogData(deviceId, params) {
                 await checkLicense.update({
                     status: true
                 }, { transaction })
-                //TODO: ยิง API เปิดไม้กั้น
-                // await axios.post(`${urlCamera}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`, { Command: 0 })
 
+                await openGate()
             } else {
                 const message = {
                     type: 'flex',
@@ -303,3 +303,21 @@ export async function replyToUser(userId, message) {
         console.error('Error sending message:', error.response?.data || error.message);
     }
 };
+
+export async function openGate() {
+    const requestBody = JSON.stringify({
+        Username: process.env.IP_USERNAME,
+        Password: process.env.IP_PASSWORD
+    });
+
+    const hash = crypto.createHash('sha256');
+    hash.update(requestBody);
+    const digest = hash.digest('hex');
+
+    axios.post(`${process.env.URL_CAMERA}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`, { Command: 0 }, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Digest': `SHA-256=${digest}`,
+        }
+    })
+}

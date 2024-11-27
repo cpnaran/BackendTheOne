@@ -412,8 +412,8 @@ router.post("/", async (req, res) => {
                     await latestLog.update({
                         checkOutAt: new Date()
                     }, { transaction })
-                    // TODO: ยิง API เปิดไม้กั้น
-                    // await axios.post(`${urlCamera}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`, { Command: 0 })
+
+                    await feature.logData.openGate()
                 }
                 await transaction.commit()
             default:
