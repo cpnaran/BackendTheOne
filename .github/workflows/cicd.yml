@@ -26,6 +26,9 @@ jobs:
           echo "API_KEY_IMG_BB=${{ secrets.API_KEY_IMG_BB }}" >> .env
           echo "API_KEY_SLIP_OK=${{ secrets.API_KEY_SLIP_OK }}" >> .env
           echo "URL_SLIP_OK=${{ secrets.URL_SLIP_OK }}" >> .env
+          echo "IP_USERNAME"=${{secrets.IP_USERNAME}}" >> .env
+          echo "IP_PASSWORD"=${{secrets.IP_PASSWORD}}" >> .env
+          echo "URL_CAMERA"=${{secrets.URL_CAMERA}}" >> .env
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
