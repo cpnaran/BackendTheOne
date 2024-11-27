@@ -20,8 +20,8 @@ export async function getOptionPackage(userId) {
         }
     })
     const days = new Date()
-    if (user.JsonData !== null) {
-        if (user.JsonData?.special_package[0]?.expiredAt > days) {
+    if (user?.JsonData !== null) {
+        if (user?.JsonData?.special_package[0]?.expiredAt > days) {
             const packages = await Package.findOne({
                 where: {
                     id: user.JsonData?.special_package[0].id,
@@ -42,7 +42,7 @@ export async function getOptionLicense(userId) {
         where: {
             userId
         },
-        attributes: ['id', 'userId', 'license', 'paymentState']
+        attributes: ['id', 'userId', 'license']
     })
 
     return data
