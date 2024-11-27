@@ -20,15 +20,17 @@ export async function getOptionPackage(userId) {
         }
     })
     const days = new Date()
-    if (!user.JsonData === null && user.JsonData?.special_package[0]?.expiredAt > days) {
-        const packages = await Package.findOne({
-            where: {
-                id: user.JsonData?.special_package[0].id,
-                isActive: true
+    if (user.JsonData !== null) {
+        if (user.JsonData?.special_package[0]?.expiredAt > days) {
+            const packages = await Package.findOne({
+                where: {
+                    id: user.JsonData?.special_package[0].id,
+                    isActive: true
+                }
+            })
+            if (packages !== null || packages !== undefined) {
+                data.push(packages)
             }
-        })
-        if (packages !== null || packages !== undefined) {
-            data.push(packages)
         }
     }
     const res = data.sort((a, b) => a.days - b.days)
