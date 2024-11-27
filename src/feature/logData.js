@@ -3,6 +3,12 @@ import LogData from '../models/LogData.js'
 import License from '../models/License.js';
 import sequelize from '../../database.js';
 import { Op } from 'sequelize';
+import axios from 'axios';
+import { config } from 'dotenv';
+import crypto from 'crypto';
+
+config()
+const channelAccessToken = process.env.ACCESS_TOKEN
 
 export async function createLogData(deviceId, params) {
     const vehicleTypeMap = {
@@ -78,30 +84,188 @@ export async function createLogData(deviceId, params) {
     try {
         if (checkLicense) {
             if (deviceId === 'HC121-01') {
-                await LogData.create({
-                    license: params.plateNo,
-                    checkInAt: new Date(params.picTime),
-                    vehicleType: type,
-                    vehicleColor: color
+                await LogData.findOrCreate({
+                    where: {
+                        license: params.plateNo,
+                        checkOutAt: null
+                    },
+                    defaults: {
+                        license: params.plateNo,
+                        checkInAt: new Date(params.picTime),
+                        vehicleType: type,
+                        vehicleColor: color
+                    }
                 }, { transaction })
                 await checkLicense.update({
                     status: true
                 }, { transaction })
 
-                //TODO: ยิง API เปิดไม้กั้น
+                await openGate()
             } else {
-                await LogData.update({
-                    checkOutAt: new Date(params.picTime),
-                }, {
-                    where: {
-                        license: strLicense
-                    }, transaction
-                })
-                await checkLicense.update({
-                    status: false
-                }, { transaction })
-
-                //TODO: ยิง API เปิดไม้กั้น
+                const message = {
+                    type: 'flex',
+                    altText: 'ยืนยันการนำรถออก',
+                    contents: {
+                        "type": "bubble",
+                        "body": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "ยืนยันการนำรถออก",
+                                    "weight": "bold",
+                                    "size": "xl"
+                                },
+                                {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "margin": "lg",
+                                    "spacing": "sm",
+                                    "contents": [
+                                        {
+                                            "type": "box",
+                                            "layout": "baseline",
+                                            "spacing": "sm",
+                                            "contents": [
+                                                {
+                                                    "type": "text",
+                                                    "text": "หมายเลขทะเบียน",
+                                                    "wrap": true,
+                                                    "color": "#666666",
+                                                    "size": "md",
+                                                    "flex": 5,
+                                                    "align": "center"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "box",
+                                            "layout": "baseline",
+                                            "spacing": "sm",
+                                            "contents": [
+                                                {
+                                                    "type": "text",
+                                                    "text": `${license}`,
+                                                    "wrap": true,
+                                                    "color": "#00b900",
+                                                    "size": "xl",
+                                                    "flex": 5,
+                                                    "weight": "bold",
+                                                    "style": "normal",
+                                                    "decoration": "none",
+                                                    "align": "center"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        "footer": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "link",
+                                    "height": "sm",
+                                    "action": {
+                                        "type": "message",
+                                        "label": "ยืนยัน",
+                                        "text": `ยืนยันหมายเลขทะเบียน ${license}`
+                                    },
+                                    "color": "#000000"
+                                }
+                            ],
+                            "flex": 0
+                        }
+                    },
+                }
+                await replyToUser(checkLicense.userId, message)
+            }
+        } else {
+            const licenseData = await License.findOne({
+                where: {
+                    license: strLicense
+                }
+            })
+            if (licenseData) {
+                const message = {
+                    type: 'flex',
+                    altText: 'แจ้งเตือนชำระค่าปรับ',
+                    contents: {
+                        type: 'bubble',
+                        header: {
+                            type: 'box',
+                            layout: 'vertical',
+                            contents: [
+                                {
+                                    type: 'text',
+                                    text: 'แพ็คเก็จหมดอายุ',
+                                    size: 'lg',
+                                    color: '#1DB446',
+                                    weight: 'bold',
+                                },
+                            ],
+                        },
+                        body: {
+                            type: 'box',
+                            layout: 'vertical',
+                            contents: [{
+                                type: 'box',
+                                layout: 'vertical',
+                                spacing: 'sm',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: `หมายเลขทะเบียน: ${licenseData.license}`,
+                                        size: 'md',
+                                        color: '#333333',
+                                        weight: 'bold',
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: `รถของท่านได้ใช้บริการเกินแพ็คเก็จแล้ว ท่านจะต้องชำระค่าส่วนเกิน ก่อนนำรถของท่านออก`,
+                                        size: 'sm',
+                                        wrap: true,
+                                        color: '#000000',
+                                        weight: 'regular',
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: `กรุณาชำระค่าปรับก่อนนำรถออก`,
+                                        size: 'md',
+                                        color: '#FF5551',
+                                        weight: 'bold',
+                                    },
+                                    {
+                                        type: 'separator',
+                                        margin: 'sm',
+                                    },
+                                ],
+                            }],
+                        },
+                        footer: {
+                            type: 'box',
+                            layout: 'vertical',
+                            contents: [
+                                {
+                                    type: 'button',
+                                    style: 'primary',
+                                    color: '#1DB446',
+                                    action: {
+                                        type: 'message',
+                                        label: 'ชำระค่าปรับ',
+                                        text: `ชำระค่าปรับ ${licenseData.license}`
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                }
+                await replyToUser(checkLicense.userId, message)
             }
         }
         await transaction.commit()
@@ -111,4 +275,49 @@ export async function createLogData(deviceId, params) {
     }
 
 
+}
+
+export async function replyToUser(userId, message) {
+    try {
+        const response = await axios.post(
+            'https://api.line.me/v2/bot/message/push',
+            {
+                to: userId,
+                messages: [
+                    {
+                        type: 'text',
+                        text: message,
+                    },
+                ],
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+                },
+            }
+        );
+        console.log('Message sent successfully:', response.data);
+        return response
+    } catch (error) {
+        console.error('Error sending message:', error.response?.data || error.message);
+    }
+};
+
+export async function openGate() {
+    const requestBody = JSON.stringify({
+        Username: process.env.IP_USERNAME,
+        Password: process.env.IP_PASSWORD
+    });
+
+    const hash = crypto.createHash('sha256');
+    hash.update(requestBody);
+    const digest = hash.digest('hex');
+
+    axios.post(`${process.env.URL_CAMERA}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`, { Command: 0 }, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Digest': `SHA-256=${digest}`,
+        }
+    })
 }
