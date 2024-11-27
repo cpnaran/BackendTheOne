@@ -362,36 +362,37 @@ router.post("/", async (req, res) => {
                                 Authorization: `Bearer ${channelAccessToken}`,
                             },
                         });
-                    }
-                    await Transaction.create(
-                        {
-                            userId,
-                            packageId: `30d27f15-0ace-4263-b789-1c851d20ac6c`,
+                    } else {
+                        await Transaction.create(
+                            {
+                                userId,
+                                packageId: `30d27f15-0ace-4263-b789-1c851d20ac6c`,
+                                amount: overDays * 100,
+                                paymentState: `PENDING`,
+                                license: licenseData.license,
+                            },
+                            { transaction }
+                        );
+                        const packageData = {
                             amount: overDays * 100,
-                            paymentState: `PENDING`,
+                            package: `จ่ายค่าปรับ ${overDays} วัน`,
+                        };
+                        const urlQrPayment = await services.promtpayQR.generatePromptPayQR({
+                            amount: overDays * 100,
+                        });
+                        await feature.webhook.replyUser({
+                            userId,
+                            method: `สมัครสมาชิก`,
+                            imgUrl: urlQrPayment,
+                            packageData,
                             license: licenseData.license,
-                        },
-                        { transaction }
-                    );
-                    const packageData = {
-                        amount: overDays * 100,
-                        package: `จ่ายค่าปรับ ${overDays} วัน`,
-                    };
-                    const urlQrPayment = await services.promtpayQR.generatePromptPayQR({
-                        amount: overDays * 100,
-                    });
-                    await feature.webhook.replyUser({
-                        userId,
-                        method: `สมัครสมาชิก`,
-                        imgUrl: urlQrPayment,
-                        packageData,
-                        license: licenseData.license,
-                    });
+                        });
+                    }
                     transaction.commit();
                 }
                 break;
             case "ยืนยันหมายเลขทะเบียน":
-                //TODO: ยิง API เปิดไม้กั้น
+                console.log(`webhook.js:395 ยืนยันหมายเลขทะเบียน`)
                 const transaction = await sequelize.transaction()
                 const licenseData = await License.findOne({
                     where: {
@@ -401,6 +402,7 @@ router.post("/", async (req, res) => {
                         }
                     }
                 })
+                console.log(`webhook.js:404 ${license}`)
                 if (licenseData) {
                     await licenseData.update({
                         status: false
@@ -414,6 +416,7 @@ router.post("/", async (req, res) => {
                     }, { transaction })
 
                     await feature.logData.openGate()
+                    console.log('webhook.js:418 open gate')
                 }
                 await transaction.commit()
             default:
