@@ -5,12 +5,13 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/packages", getOptionPackage);
+router.get("/packages/:userId", getOptionPackage);
 router.get("/license/:userId", getLicense);
 
 async function getOptionPackage(req, res, next) {
   try {
-    const response = await features.option.getOptionPackage();
+    const { userId } = req.params;
+    const response = await features.option.getOptionPackage(userId);
     res.json(response);
   } catch (error) {
     console.error("Error processing request:", error);

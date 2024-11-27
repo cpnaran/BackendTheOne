@@ -13,9 +13,11 @@ import {
   addHours,
   getMonth,
   getHours,
+  addYears,
 } from "date-fns";
 import Package from "../models/Package.js";
 import LogData from "../models/LogData.js";
+import User from "../models/User.js";
 
 export async function getMonthlyRevenue(filter = null) {
   let now_date = new Date();
@@ -384,4 +386,162 @@ export const getUsageTime = async () => {
   }
 
   return graph;
+};
+
+export const getCarList = async ({ page, per_page, license }) => {
+  // Calculate limit and offset
+  const limit = per_page ? parseInt(per_page, 10) : undefined;
+  const offset =
+    page && per_page
+      ? (parseInt(page, 10) - 1) * parseInt(per_page, 10)
+      : undefined;
+
+  // Define query options
+  const queryOptions = {};
+  if (limit !== undefined) queryOptions.limit = limit;
+  if (offset !== undefined) queryOptions.offset = offset;
+
+  if (license) {
+    queryOptions.where = {
+      license: {
+        [Op.like]: `%${license}%`,
+      },
+    };
+  }
+  queryOptions.raw = true;
+  const list = await License.findAndCountAll(queryOptions);
+
+  const userIds = list.rows.map((element) => element.userId);
+
+  const user_list = await User.findAll({
+    where: {
+      userId: {
+        [Op.in]: userIds,
+      },
+    },
+    raw: true,
+  });
+
+  let new_obj_licenses = {};
+  for (const license of list.rows) {
+    new_obj_licenses[license.userId] = license;
+  }
+  let result = [];
+
+  for (const user of user_list) {
+    if (new_obj_licenses[user.userId]) {
+      new_obj_licenses[user.userId].fullName = user.fullName;
+      result.push(new_obj_licenses[user.userId]);
+    }
+  }
+
+  let resp = {
+    data: result,
+    totalCount: list.count,
+    totalPage: Math.ceil(per_page ? list.count / parseInt(per_page) : 0),
+  };
+
+  return resp;
+};
+
+export const demote = async (id) => {
+  if (!id) {
+    throw new Error("id is required!");
+  }
+  const transaction = await sequelize.transaction();
+  try {
+    if (await checkExistingLicense(id)) {
+      await License.update(
+        { JsonData: null },
+        {
+          where: { id },
+          transaction,
+        }
+      );
+      await transaction.commit();
+    }
+    return "success";
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Error occurred during package deletion:", error);
+    throw error;
+  }
+};
+
+export const promote = async (id, package_id) => {
+  if (!id) {
+    throw new Error("id is required!");
+  }
+  const transaction = await sequelize.transaction();
+
+  try {
+    if (await checkExistingLicense(id)) {
+      const startAt = new Date();
+      const expireAt = addYears(startAt, 1);
+
+      await License.update(
+        {
+          JsonData: {
+            special_package: [
+              {
+                id: package_id,
+                startAt: startAt,
+                expiredAt: expireAt,
+              },
+            ],
+          },
+        },
+        {
+          where: { id },
+          transaction,
+        }
+      );
+      await transaction.commit();
+    }
+    return "success";
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Error occurred", error);
+    throw error;
+  }
+};
+
+export const checkExistingLicense = async (id) => {
+  const doc = await License.findOne({ where: { id } });
+  if (!doc) {
+    throw new Error("License not found.");
+  }
+  return doc;
+};
+
+export const Add15Days = async (id) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const doc = await checkExistingLicense(id);
+    if (doc) {
+      const added = addDays(doc.expiredAt, 15);
+
+      await License.update(
+        {
+          expiredAt: added,
+        },
+        {
+          where: { id },
+          transaction,
+        }
+      );
+      await transaction.commit();
+    }
+    return "success";
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Error occurred", error);
+    throw error;
+  }
+};
+
+export const getPremiumoptions = async () => {
+  const list = await Package.findAll({ where: { packageType: "PREMIUM" } });
+
+  return list;
 };

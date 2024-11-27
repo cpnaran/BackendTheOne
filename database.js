@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import { config } from "dotenv";
 
 config();
+//Todo after pass all test change db credential
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -9,6 +10,13 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: "mysql",
+
+    pool: {
+      max: 10, // Maximum number of connections in pool
+      min: 0, // Minimum number of connections in pool
+      acquire: 30000, // The maximum time Sequelize will wait before throwing an error when trying to connect (in milliseconds)
+      idle: 10000, // The maximum time (in milliseconds) that a connection can be idle before being released
+    },
   }
 );
 
