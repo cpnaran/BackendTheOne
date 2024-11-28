@@ -387,7 +387,7 @@ router.post("/", async (req, res) => {
                         packageData,
                         license: licenseData.license,
                     });
-                    transaction.commit();
+                    // transaction.commit();
                 }
                 break;
             case "ยืนยันหมายเลขทะเบียน":
@@ -417,7 +417,7 @@ router.post("/", async (req, res) => {
                     await feature.logData.openGate()
                     console.log('webhook.js:418 open gate')
                 }
-                await transaction.commit()
+            // await transaction.commit()
             default:
                 console.log("🚀 ~ file: webhook.js:556 ~ default:");
                 if (req.body.events[0].message.type === "image") {
@@ -556,7 +556,7 @@ router.post("/", async (req, res) => {
                                             },
                                         }
                                     );
-                                    transaction.commit();
+                                    // transaction.commit();
                                     return `SUCCESS`;
                                 } else if (license.expiredAt >= getDate) {
                                     console.log("แพ็คเก็จไม่หมด ต่อทะเบียน");
@@ -664,11 +664,12 @@ router.post("/", async (req, res) => {
                     });
                 }
         }
+        await transaction.commit()
         res.json("SUCCESS");
     } catch (error) {
         console.log(">>>>>>>>>>>>>>>", error);
         transaction.rollback();
-        if (error.response.status === 400) {
+        if (error?.response?.status === 400) {
             const data = {
                 replyToken,
                 messages: [
