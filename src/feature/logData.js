@@ -194,14 +194,14 @@ export async function createLogData(deviceId, params) {
                 //     await replyToUser(checkLicense.userId, message)
                 //     console.log(`LogData.js:190 ส่งยืนยัน`)
                 // }
-                if (licenseData) {
-                    await LogData.update({ checkOutAt: new Date(params.picTime) }, {
-                        where: {
-                            license: strLicense
-                        }, transaction
-                    })
-                    await openGate()
-                }
+                await LogData.update({ checkOutAt: new Date(params.picTime) }, {
+                    where: {
+                        license: strLicense
+                    }, transaction
+                })
+                await License.update({ status: false }, { where: { license: strLicense }, transaction })
+                await openGate()
+
             }
         } else {
             const licenseData = await License.findOne({
