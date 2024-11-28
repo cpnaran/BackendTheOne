@@ -90,20 +90,11 @@ export async function createLogData(deviceId, params) {
         if (checkLicense) {
             if (deviceId === 'HC121-01') {
                 console.log(`logData.js:87 checkIn ${checkLicense}`)
-                await LogData.Create({
+                await LogData.create({
                     license: strLicense,
-                    checkIn: new Date(params.picTime),
+                    checkInAt: new Date(params.picTime),
                     vehicleType: type,
                     vehicleColor: color
-                    // where: {
-                    //     license: strLicense
-                    // }
-                    // defaults: {
-                    //     license: strLicense,
-                    //     checkInAt: new Date(params.picTime),
-                    //     vehicleType: type,
-                    //     vehicleColor: color
-                    // }
                 }, { transaction })
                 await checkLicense.update({
                     status: true
