@@ -84,6 +84,7 @@ export async function createLogData(deviceId, params) {
     try {
         if (checkLicense) {
             if (deviceId === 'HC121-01') {
+                console.log(`logData.js:87 checkIn ${checkLicense}`)
                 await LogData.findOrCreate({
                     where: {
                         license: params.plateNo,
@@ -183,7 +184,11 @@ export async function createLogData(deviceId, params) {
                         }
                     },
                 }
-                await replyToUser(checkLicense.userId, message)
+                console.log(`LogData.js:187 Checkout`)
+                if (checkLicense.status) {
+                    await replyToUser(checkLicense.userId, message)
+                    console.log(`LogData.js:190 ส่งยืนยัน`)
+                }
             }
         } else {
             const licenseData = await License.findOne({
@@ -266,11 +271,12 @@ export async function createLogData(deviceId, params) {
                     },
                 }
                 await replyToUser(checkLicense.userId, message)
+                console.log(`logData.js:274 ส่งแจ้งค่าปรับ`)
             }
         }
         await transaction.commit()
     } catch (e) {
-        (await transaction).rollback()
+        await transaction.rollback()
         throw new Error(e.message)
     }
 

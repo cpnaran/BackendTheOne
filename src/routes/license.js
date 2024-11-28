@@ -4,7 +4,7 @@ import features from '../feature/index.js';
 const router = express.Router();
 
 router.post('/renew', renewLicense)
-router.post(`/fine-payment`, finePayment)
+router.post('/fine-payment', finePayment)
 // router.post('/changePlate' changePlateLicense)
 
 async function renewLicense(req, res, next) {
