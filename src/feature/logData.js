@@ -2,10 +2,12 @@ import express from 'express'
 import LogData from '../models/LogData.js'
 import License from '../models/License.js';
 import sequelize from '../../database.js';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 import axios from 'axios';
 import { config } from 'dotenv';
 import crypto from 'crypto';
+import feature from './index.js';
+import { features } from 'process';
 
 config()
 const channelAccessToken = process.env.ACCESS_TOKEN
@@ -199,82 +201,90 @@ export async function createLogData(deviceId, params) {
                     license: strLicense
                 }
             })
+            // if (licenseData) {
+            //     const message = {
+            //         type: 'flex',
+            //         altText: 'แจ้งเตือนชำระค่าปรับ',
+            //         contents: {
+            //             type: 'bubble',
+            //             header: {
+            //                 type: 'box',
+            //                 layout: 'vertical',
+            //                 contents: [
+            //                     {
+            //                         type: 'text',
+            //                         text: 'แพ็คเก็จหมดอายุ',
+            //                         size: 'lg',
+            //                         color: '#1DB446',
+            //                         weight: 'bold',
+            //                     },
+            //                 ],
+            //             },
+            //             body: {
+            //                 type: 'box',
+            //                 layout: 'vertical',
+            //                 contents: [{
+            //                     type: 'box',
+            //                     layout: 'vertical',
+            //                     spacing: 'sm',
+            //                     contents: [
+            //                         {
+            //                             type: 'text',
+            //                             text: `หมายเลขทะเบียน: ${licenseData.license}`,
+            //                             size: 'md',
+            //                             color: '#333333',
+            //                             weight: 'bold',
+            //                         },
+            //                         {
+            //                             type: 'text',
+            //                             text: `รถของท่านได้ใช้บริการเกินแพ็คเก็จแล้ว ท่านจะต้องชำระค่าส่วนเกิน ก่อนนำรถของท่านออก`,
+            //                             size: 'sm',
+            //                             wrap: true,
+            //                             color: '#000000',
+            //                             weight: 'regular',
+            //                         },
+            //                         {
+            //                             type: 'text',
+            //                             text: `กรุณาชำระค่าปรับก่อนนำรถออก`,
+            //                             size: 'md',
+            //                             color: '#FF5551',
+            //                             weight: 'bold',
+            //                         },
+            //                         {
+            //                             type: 'separator',
+            //                             margin: 'sm',
+            //                         },
+            //                     ],
+            //                 }],
+            //             },
+            //             footer: {
+            //                 type: 'box',
+            //                 layout: 'vertical',
+            //                 contents: [
+            //                     {
+            //                         type: 'button',
+            //                         style: 'primary',
+            //                         color: '#1DB446',
+            //                         action: {
+            //                             type: 'message',
+            //                             label: 'ชำระค่าปรับ',
+            //                             text: `ชำระค่าปรับ ${licenseData.license}`
+            //                         },
+            //                     },
+            //                 ],
+            //             },
+            //         },
+            //     }
+            //     await replyToUser(checkLicense.userId, message)
+            //     console.log(`logData.js:274 ส่งแจ้งค่าปรับ`)
+            // }
             if (licenseData) {
-                const message = {
-                    type: 'flex',
-                    altText: 'แจ้งเตือนชำระค่าปรับ',
-                    contents: {
-                        type: 'bubble',
-                        header: {
-                            type: 'box',
-                            layout: 'vertical',
-                            contents: [
-                                {
-                                    type: 'text',
-                                    text: 'แพ็คเก็จหมดอายุ',
-                                    size: 'lg',
-                                    color: '#1DB446',
-                                    weight: 'bold',
-                                },
-                            ],
-                        },
-                        body: {
-                            type: 'box',
-                            layout: 'vertical',
-                            contents: [{
-                                type: 'box',
-                                layout: 'vertical',
-                                spacing: 'sm',
-                                contents: [
-                                    {
-                                        type: 'text',
-                                        text: `หมายเลขทะเบียน: ${licenseData.license}`,
-                                        size: 'md',
-                                        color: '#333333',
-                                        weight: 'bold',
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: `รถของท่านได้ใช้บริการเกินแพ็คเก็จแล้ว ท่านจะต้องชำระค่าส่วนเกิน ก่อนนำรถของท่านออก`,
-                                        size: 'sm',
-                                        wrap: true,
-                                        color: '#000000',
-                                        weight: 'regular',
-                                    },
-                                    {
-                                        type: 'text',
-                                        text: `กรุณาชำระค่าปรับก่อนนำรถออก`,
-                                        size: 'md',
-                                        color: '#FF5551',
-                                        weight: 'bold',
-                                    },
-                                    {
-                                        type: 'separator',
-                                        margin: 'sm',
-                                    },
-                                ],
-                            }],
-                        },
-                        footer: {
-                            type: 'box',
-                            layout: 'vertical',
-                            contents: [
-                                {
-                                    type: 'button',
-                                    style: 'primary',
-                                    color: '#1DB446',
-                                    action: {
-                                        type: 'message',
-                                        label: 'ชำระค่าปรับ',
-                                        text: `ชำระค่าปรับ ${licenseData.license}`
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                }
-                await replyToUser(checkLicense.userId, message)
-                console.log(`logData.js:274 ส่งแจ้งค่าปรับ`)
+                await openGate()
+                await LogData.update({ checkOutAt: new Date(params.picTime) }, {
+                    where: {
+                        license: strLicense
+                    }, transaction
+                })
             }
         }
         await transaction.commit()
