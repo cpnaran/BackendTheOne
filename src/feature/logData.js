@@ -108,91 +108,99 @@ export async function createLogData(deviceId, params) {
 
                 await openGate()
             } else {
-                const message = {
-                    type: 'flex',
-                    altText: 'ยืนยันการนำรถออก',
-                    contents: {
-                        "type": "bubble",
-                        "body": {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                                {
-                                    "type": "text",
-                                    "text": "ยืนยันการนำรถออก",
-                                    "weight": "bold",
-                                    "size": "xl"
-                                },
-                                {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "margin": "lg",
-                                    "spacing": "sm",
-                                    "contents": [
-                                        {
-                                            "type": "box",
-                                            "layout": "baseline",
-                                            "spacing": "sm",
-                                            "contents": [
-                                                {
-                                                    "type": "text",
-                                                    "text": "หมายเลขทะเบียน",
-                                                    "wrap": true,
-                                                    "color": "#666666",
-                                                    "size": "md",
-                                                    "flex": 5,
-                                                    "align": "center"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "box",
-                                            "layout": "baseline",
-                                            "spacing": "sm",
-                                            "contents": [
-                                                {
-                                                    "type": "text",
-                                                    "text": `${strLicense}`,
-                                                    "wrap": true,
-                                                    "color": "#00b900",
-                                                    "size": "xl",
-                                                    "flex": 5,
-                                                    "weight": "bold",
-                                                    "style": "normal",
-                                                    "decoration": "none",
-                                                    "align": "center"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        "footer": {
-                            "type": "box",
-                            "layout": "vertical",
-                            "spacing": "sm",
-                            "contents": [
-                                {
-                                    "type": "button",
-                                    "style": "link",
-                                    "height": "sm",
-                                    "action": {
-                                        "type": "message",
-                                        "label": "ยืนยัน",
-                                        "text": `ยืนยันหมายเลขทะเบียน ${strLicense}`
-                                    },
-                                    "color": "#000000"
-                                }
-                            ],
-                            "flex": 0
-                        }
-                    },
-                }
-                console.log(`LogData.js:187 Checkout`)
-                if (checkLicense.status) {
-                    await replyToUser(checkLicense.userId, message)
-                    console.log(`LogData.js:190 ส่งยืนยัน`)
+                // const message = {
+                //     type: 'flex',
+                //     altText: 'ยืนยันการนำรถออก',
+                //     contents: {
+                //         "type": "bubble",
+                //         "body": {
+                //             "type": "box",
+                //             "layout": "vertical",
+                //             "contents": [
+                //                 {
+                //                     "type": "text",
+                //                     "text": "ยืนยันการนำรถออก",
+                //                     "weight": "bold",
+                //                     "size": "xl"
+                //                 },
+                //                 {
+                //                     "type": "box",
+                //                     "layout": "vertical",
+                //                     "margin": "lg",
+                //                     "spacing": "sm",
+                //                     "contents": [
+                //                         {
+                //                             "type": "box",
+                //                             "layout": "baseline",
+                //                             "spacing": "sm",
+                //                             "contents": [
+                //                                 {
+                //                                     "type": "text",
+                //                                     "text": "หมายเลขทะเบียน",
+                //                                     "wrap": true,
+                //                                     "color": "#666666",
+                //                                     "size": "md",
+                //                                     "flex": 5,
+                //                                     "align": "center"
+                //                                 }
+                //                             ]
+                //                         },
+                //                         {
+                //                             "type": "box",
+                //                             "layout": "baseline",
+                //                             "spacing": "sm",
+                //                             "contents": [
+                //                                 {
+                //                                     "type": "text",
+                //                                     "text": `${strLicense}`,
+                //                                     "wrap": true,
+                //                                     "color": "#00b900",
+                //                                     "size": "xl",
+                //                                     "flex": 5,
+                //                                     "weight": "bold",
+                //                                     "style": "normal",
+                //                                     "decoration": "none",
+                //                                     "align": "center"
+                //                                 }
+                //                             ]
+                //                         }
+                //                     ]
+                //                 }
+                //             ]
+                //         },
+                //         "footer": {
+                //             "type": "box",
+                //             "layout": "vertical",
+                //             "spacing": "sm",
+                //             "contents": [
+                //                 {
+                //                     "type": "button",
+                //                     "style": "link",
+                //                     "height": "sm",
+                //                     "action": {
+                //                         "type": "message",
+                //                         "label": "ยืนยัน",
+                //                         "text": `ยืนยันหมายเลขทะเบียน ${strLicense}`
+                //                     },
+                //                     "color": "#000000"
+                //                 }
+                //             ],
+                //             "flex": 0
+                //         }
+                //     },
+                // }
+                // console.log(`LogData.js:187 Checkout`)
+                // if (checkLicense.status) {
+                //     await replyToUser(checkLicense.userId, message)
+                //     console.log(`LogData.js:190 ส่งยืนยัน`)
+                // }
+                if (licenseData) {
+                    await LogData.update({ checkOutAt: new Date(params.picTime) }, {
+                        where: {
+                            license: strLicense
+                        }, transaction
+                    })
+                    await openGate()
                 }
             }
         } else {
@@ -201,91 +209,84 @@ export async function createLogData(deviceId, params) {
                     license: strLicense
                 }
             })
-            // if (licenseData) {
-            //     const message = {
-            //         type: 'flex',
-            //         altText: 'แจ้งเตือนชำระค่าปรับ',
-            //         contents: {
-            //             type: 'bubble',
-            //             header: {
-            //                 type: 'box',
-            //                 layout: 'vertical',
-            //                 contents: [
-            //                     {
-            //                         type: 'text',
-            //                         text: 'แพ็คเก็จหมดอายุ',
-            //                         size: 'lg',
-            //                         color: '#1DB446',
-            //                         weight: 'bold',
-            //                     },
-            //                 ],
-            //             },
-            //             body: {
-            //                 type: 'box',
-            //                 layout: 'vertical',
-            //                 contents: [{
-            //                     type: 'box',
-            //                     layout: 'vertical',
-            //                     spacing: 'sm',
-            //                     contents: [
-            //                         {
-            //                             type: 'text',
-            //                             text: `หมายเลขทะเบียน: ${licenseData.license}`,
-            //                             size: 'md',
-            //                             color: '#333333',
-            //                             weight: 'bold',
-            //                         },
-            //                         {
-            //                             type: 'text',
-            //                             text: `รถของท่านได้ใช้บริการเกินแพ็คเก็จแล้ว ท่านจะต้องชำระค่าส่วนเกิน ก่อนนำรถของท่านออก`,
-            //                             size: 'sm',
-            //                             wrap: true,
-            //                             color: '#000000',
-            //                             weight: 'regular',
-            //                         },
-            //                         {
-            //                             type: 'text',
-            //                             text: `กรุณาชำระค่าปรับก่อนนำรถออก`,
-            //                             size: 'md',
-            //                             color: '#FF5551',
-            //                             weight: 'bold',
-            //                         },
-            //                         {
-            //                             type: 'separator',
-            //                             margin: 'sm',
-            //                         },
-            //                     ],
-            //                 }],
-            //             },
-            //             footer: {
-            //                 type: 'box',
-            //                 layout: 'vertical',
-            //                 contents: [
-            //                     {
-            //                         type: 'button',
-            //                         style: 'primary',
-            //                         color: '#1DB446',
-            //                         action: {
-            //                             type: 'message',
-            //                             label: 'ชำระค่าปรับ',
-            //                             text: `ชำระค่าปรับ ${licenseData.license}`
-            //                         },
-            //                     },
-            //                 ],
-            //             },
-            //         },
-            //     }
-            //     await replyToUser(checkLicense.userId, message)
-            //     console.log(`logData.js:274 ส่งแจ้งค่าปรับ`)
-            // }
             if (licenseData) {
-                await openGate()
-                await LogData.update({ checkOutAt: new Date(params.picTime) }, {
-                    where: {
-                        license: strLicense
-                    }, transaction
-                })
+                const message = {
+                    type: 'flex',
+                    altText: 'แจ้งเตือนชำระค่าปรับ',
+                    contents: {
+                        type: 'bubble',
+                        header: {
+                            type: 'box',
+                            layout: 'vertical',
+                            contents: [
+                                {
+                                    type: 'text',
+                                    text: 'แพ็คเก็จหมดอายุ',
+                                    size: 'lg',
+                                    color: '#1DB446',
+                                    weight: 'bold',
+                                },
+                            ],
+                        },
+                        body: {
+                            type: 'box',
+                            layout: 'vertical',
+                            contents: [{
+                                type: 'box',
+                                layout: 'vertical',
+                                spacing: 'sm',
+                                contents: [
+                                    {
+                                        type: 'text',
+                                        text: `หมายเลขทะเบียน: ${licenseData.license}`,
+                                        size: 'md',
+                                        color: '#333333',
+                                        weight: 'bold',
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: `รถของท่านได้ใช้บริการเกินแพ็คเก็จแล้ว ท่านจะต้องชำระค่าส่วนเกิน ก่อนนำรถของท่านออก`,
+                                        size: 'sm',
+                                        wrap: true,
+                                        color: '#000000',
+                                        weight: 'regular',
+                                    },
+                                    {
+                                        type: 'text',
+                                        text: `กรุณาชำระค่าปรับก่อนนำรถออก`,
+                                        size: 'md',
+                                        color: '#FF5551',
+                                        weight: 'bold',
+                                    },
+                                    {
+                                        type: 'separator',
+                                        margin: 'sm',
+                                    },
+                                ],
+                            }],
+                        },
+                        footer: {
+                            type: 'box',
+                            layout: 'vertical',
+                            contents: [
+                                {
+                                    type: 'button',
+                                    style: 'primary',
+                                    color: '#1DB446',
+                                    action: {
+                                        type: 'message',
+                                        label: 'ชำระค่าปรับ',
+                                        text: `ชำระค่าปรับ ${licenseData.license}`
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                }
+                await replyToUser(checkLicense.userId, message)
+                console.log(`logData.js:274 ส่งแจ้งค่าปรับ`)
             }
+
         }
         await transaction.commit()
     } catch (e) {
