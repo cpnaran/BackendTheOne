@@ -8,6 +8,7 @@ import { config } from 'dotenv';
 import crypto from 'crypto';
 import feature from './index.js';
 import { features } from 'process';
+import AxiosDigestAuth from '@mhoc/axios-digest-auth';
 
 config()
 const channelAccessToken = process.env.ACCESS_TOKEN
@@ -325,19 +326,34 @@ export async function replyToUser(userId, message) {
 };
 
 export async function openGate() {
-    const requestBody = JSON.stringify({
-        Username: process.env.IP_USERNAME,
-        Password: process.env.IP_PASSWORD
+    const digestAuth = new AxiosDigestAuth({
+        username: process.env.IP_USERNAME,
+        password: process.env.IP_PASSWORD,
     });
 
-    const hash = crypto.createHash('md5');
-    hash.update(requestBody);
-    const digest = hash.digest('hex');
+    const MakeARequest = async () => {
+        const response = await digestAuth.request({
+            headers: { Accept: "application/json" },
+            method: "post",
+            url: `${process.env.URL_CAMERA}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`,
+            data: {
+                Command: 0
+            }
+        });
+    }
+    // const requestBody = JSON.stringify({
+    //     Username: process.env.IP_USERNAME,
+    //     Password: process.env.IP_PASSWORD
+    // });
 
-    axios.post(`${process.env.URL_CAMERA}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`, { Command: 0 }, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Digest': `MD5=78459e357376100de3d76ce25c8d6901`,
-        }
-    })
+    // const hash = crypto.createHash('md5');
+    // hash.update(requestBody);
+    // const digest = hash.digest('hex');
+
+    // axios.post(`${process.env.URL_CAMERA}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`, { Command: 0 }, {
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         'Digest': `MD5=78459e357376100de3d76ce25c8d6901`,
+    //     }
+    // })
 }
