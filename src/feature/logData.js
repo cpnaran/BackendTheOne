@@ -299,7 +299,7 @@ export async function replyToUser(userId, message) {
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${CHANNEL_ACCESS_TOKEN}`,
+                    Authorization: `Bearer ${channelAccessToken}`,
                 },
             }
         );
