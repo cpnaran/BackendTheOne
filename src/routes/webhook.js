@@ -597,7 +597,7 @@ router.post("/", async (req, res) => {
                                     },
                                 }
                             );
-                            await transaction.commit();
+                            // await transaction.commit();
                         } else {
                             // const data = {
                             //     replyToken,
@@ -668,7 +668,7 @@ router.post("/", async (req, res) => {
         res.json("SUCCESS");
     } catch (error) {
         console.log(">>>>>>>>>>>>>>>", error);
-        transaction.rollback();
+        await transaction.rollback();
         if (error?.response?.status === 400) {
             const data = {
                 replyToken,
