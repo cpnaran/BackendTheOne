@@ -362,32 +362,31 @@ router.post("/", async (req, res) => {
                                 Authorization: `Bearer ${channelAccessToken}`,
                             },
                         });
-                    } else {
-                        await Transaction.create(
-                            {
-                                userId,
-                                packageId: `30d27f15-0ace-4263-b789-1c851d20ac6c`,
-                                amount: overDays * 100,
-                                paymentState: `PENDING`,
-                                license: licenseData.license,
-                            },
-                            { transaction }
-                        );
-                        const packageData = {
-                            amount: overDays * 100,
-                            package: `จ่ายค่าปรับ ${overDays} วัน`,
-                        };
-                        const urlQrPayment = await services.promtpayQR.generatePromptPayQR({
-                            amount: overDays * 100,
-                        });
-                        await feature.webhook.replyUser({
-                            userId,
-                            method: `สมัครสมาชิก`,
-                            imgUrl: urlQrPayment,
-                            packageData,
-                            license: licenseData.license,
-                        });
                     }
+                    await Transaction.create(
+                        {
+                            userId,
+                            packageId: `30d27f15-0ace-4263-b789-1c851d20ac6c`,
+                            amount: overDays * 100,
+                            paymentState: `PENDING`,
+                            license: licenseData.license,
+                        },
+                        { transaction }
+                    );
+                    const packageData = {
+                        amount: overDays * 100,
+                        package: `จ่ายค่าปรับ ${overDays} วัน`,
+                    };
+                    const urlQrPayment = await services.promtpayQR.generatePromptPayQR({
+                        amount: overDays * 100,
+                    });
+                    await feature.webhook.replyUser({
+                        userId,
+                        method: `สมัครสมาชิก`,
+                        imgUrl: urlQrPayment,
+                        packageData,
+                        license: licenseData.license,
+                    });
                     transaction.commit();
                 }
                 break;
