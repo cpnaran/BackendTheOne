@@ -333,6 +333,7 @@ export async function openGate() {
     const hash = crypto.createHash('md5');
     hash.update(requestBody);
     const digest = hash.digest('hex');
+
     axios.post(`${process.env.URL_CAMERA}/LAPI/V1.0/ParkingLots/Entrances/Lanes/0/GateControl`, { Command: 0 }, {
         headers: {
             'Content-Type': 'application/json',
