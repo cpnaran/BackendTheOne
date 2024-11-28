@@ -387,12 +387,11 @@ router.post("/", async (req, res) => {
                         packageData,
                         license: licenseData.license,
                     });
-                    // transaction.commit();
+                    //await transaction.commit();
                 }
                 break;
             case "ยืนยันหมายเลขทะเบียน":
                 console.log(`webhook.js:395 ยืนยันหมายเลขทะเบียน`)
-                const transaction = await sequelize.transaction()
                 const licenseData = await License.findOne({
                     where: {
                         license: method[1],
@@ -556,7 +555,7 @@ router.post("/", async (req, res) => {
                                             },
                                         }
                                     );
-                                    // transaction.commit();
+                                    //await transaction.commit();
                                     return `SUCCESS`;
                                 } else if (license.expiredAt >= getDate) {
                                     console.log("แพ็คเก็จไม่หมด ต่อทะเบียน");
