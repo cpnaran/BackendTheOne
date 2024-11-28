@@ -87,11 +87,11 @@ export async function createLogData(deviceId, params) {
                 console.log(`logData.js:87 checkIn ${checkLicense}`)
                 await LogData.findOrCreate({
                     where: {
-                        license: params.plateNo,
+                        license: strLicense,
                         checkOutAt: null
                     },
                     defaults: {
-                        license: params.plateNo,
+                        license: strLicense,
                         checkInAt: new Date(params.picTime),
                         vehicleType: type,
                         vehicleColor: color
@@ -147,7 +147,7 @@ export async function createLogData(deviceId, params) {
                                             "contents": [
                                                 {
                                                     "type": "text",
-                                                    "text": `${license}`,
+                                                    "text": `${strLicense}`,
                                                     "wrap": true,
                                                     "color": "#00b900",
                                                     "size": "xl",
@@ -175,7 +175,7 @@ export async function createLogData(deviceId, params) {
                                     "action": {
                                         "type": "message",
                                         "label": "ยืนยัน",
-                                        "text": `ยืนยันหมายเลขทะเบียน ${license}`
+                                        "text": `ยืนยันหมายเลขทะเบียน ${strLicense}`
                                     },
                                     "color": "#000000"
                                 }
