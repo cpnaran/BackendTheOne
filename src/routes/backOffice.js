@@ -166,8 +166,8 @@ async function promote(req, res) {
 }
 async function addDays(req, res) {
   try {
-    const { id } = req.body;
-    const response = await feature.backOffice.Add15Days(id);
+    const { id, days } = req.body;
+    const response = await feature.backOffice.AddDays(id, days);
     res.json(response);
   } catch (error) {
     console.error("Error processing request:", error);
