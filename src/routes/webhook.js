@@ -12,7 +12,7 @@ import User from "../models/User.js";
 import services from "../services/index.js";
 import feature from "../feature/index.js";
 import LogData from "../models/LogData.js";
-import { where } from "sequelize";
+import { Op, where } from "sequelize";
 const router = express.Router();
 config();
 
@@ -229,13 +229,19 @@ router.post("/", async (req, res) => {
                 });
                 break;
             case "ตรวจสอบที่ว่าง":
+                const now = new Date()
+                now.setHours(0, 0, 0, 0)
                 let occupiedSlots = await License.count({
-                    where: { status: true },
+                    where: {
+                        expiredAt: {
+                            [Op.gte]: now
+                        }
+                    },
                 });
-                if (occupiedSlots > 86) {
-                    occupiedSlots = 86;
+                if (occupiedSlots > 100) {
+                    occupiedSlots = 100;
                 }
-                const availableSlots = 86 - occupiedSlots;
+                const availableSlots = 100 - occupiedSlots;
 
                 response = {
                     replyToken,
@@ -264,13 +270,13 @@ router.post("/", async (req, res) => {
                                     contents: [
                                         {
                                             type: "text",
-                                            text: "จำนวนช่องจอดทั้งหมด: 86",
+                                            text: "จำนวนช่องจอดทั้งหมด: 100",
                                             size: "md",
                                             color: "#333333",
                                         },
                                         {
                                             type: "text",
-                                            text: `จำนวนที่จอดแล้ว: ${occupiedSlots}`,
+                                            text: `จำนวนรถที่ลงทะเบียนตอนนี้: ${occupiedSlots}`,
                                             size: "md",
                                             color: "#333333",
                                         },
