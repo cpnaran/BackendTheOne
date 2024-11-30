@@ -709,7 +709,7 @@ router.post("/", async (req, res) => {
         //             Authorization: `Bearer ${channelAccessToken}`,
         //         },
         //     });
-        //     res.json({ message: error });
+        res.json({ message: error });
         // }
     }
 });
