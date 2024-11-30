@@ -651,23 +651,24 @@ router.post("/", async (req, res) => {
                         });
                         console.log("No QR Code found");
                     }
-                } else {
-                    const data = {
-                        replyToken,
-                        messages: [
-                            {
-                                type: "text",
-                                text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
-                            },
-                        ],
-                    };
-                    await axios.post("https://api.line.me/v2/bot/message/reply", data, {
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${channelAccessToken}`,
-                        },
-                    });
                 }
+            // else {
+            //     const data = {
+            //         replyToken,
+            //         messages: [
+            //             {
+            //                 type: "text",
+            //                 text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
+            //             },
+            //         ],
+            //     };
+            //     await axios.post("https://api.line.me/v2/bot/message/reply", data, {
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //             Authorization: `Bearer ${channelAccessToken}`,
+            //         },
+            //     });
+            // }
         }
         await transaction.commit()
         res.json("SUCCESS");
@@ -690,25 +691,26 @@ router.post("/", async (req, res) => {
                     Authorization: `Bearer ${channelAccessToken}`,
                 },
             });
-        } else {
-            console.error("Error processing the webhook:", error);
-            const data = {
-                replyToken,
-                messages: [
-                    {
-                        type: "text",
-                        text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
-                    },
-                ],
-            };
-            await axios.post("https://api.line.me/v2/bot/message/reply", data, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${channelAccessToken}`,
-                },
-            });
-            res.json({ message: error });
         }
+        //  else {
+        //     console.error("Error processing the webhook:", error);
+        //     const data = {
+        //         replyToken,
+        //         messages: [
+        //             {
+        //                 type: "text",
+        //                 text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
+        //             },
+        //         ],
+        //     };
+        //     await axios.post("https://api.line.me/v2/bot/message/reply", data, {
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             Authorization: `Bearer ${channelAccessToken}`,
+        //         },
+        //     });
+        //     res.json({ message: error });
+        // }
     }
 });
 
