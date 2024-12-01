@@ -33,6 +33,7 @@ export async function createUser(req) {
                 }
             })
             if (isUsed) {
+                await transaction.rollback()
                 throw new Error("ขอโทษค่ะ ผู้ใช้งานเคยสมัครแพ็คเกจโปรโมชั่นนี้ไปแล้ว")
             }
         }
@@ -44,6 +45,7 @@ export async function createUser(req) {
         }
         )
         if (getLicense) {
+            await transaction.rollback()
             throw new Error("ขอโทษค่ะ ทะเบียนนี้มีในระบบแล้ว")
         }
 
