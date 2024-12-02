@@ -79,7 +79,7 @@ export async function createLogData(deviceId, params) {
         where: {
             license: strLicense,
             expiredAt: {
-                [Op.gt]: dateTime
+                [Op.gte]: dateTime
             }
         }
     })
