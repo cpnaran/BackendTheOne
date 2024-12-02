@@ -89,18 +89,18 @@ router.post("/", async (req, res) => {
                                             },
                                         ],
                                     },
-                                    // {
-                                    //     thumbnailImageUrl: 'https://drive.google.com/uc?id=1vlr92XLjxD708UUMsXKNcJAUpoAhP--q',
-                                    //     title: 'เปลี่ยนทะเบียน',
-                                    //     text: 'เปลี่ยนทะเบียน',
-                                    //     actions: [
-                                    //         {
-                                    //             type: 'uri',
-                                    //             label: 'เปลี่ยนทะเบียน',
-                                    //             uri: `${process.env.FRONT_END_BASE_URL}/changePlate?userId=${userId}&token=${replyToken}`,
-                                    //         },
-                                    //     ],
-                                    // },
+                                    {
+                                        thumbnailImageUrl: 'https://drive.google.com/uc?id=1vlr92XLjxD708UUMsXKNcJAUpoAhP--q',
+                                        title: 'เปลี่ยนทะเบียน',
+                                        text: 'เปลี่ยนทะเบียน',
+                                        actions: [
+                                            {
+                                                type: 'uri',
+                                                label: 'เปลี่ยนทะเบียน',
+                                                uri: `${process.env.FRONT_END_BASE_URL}/changePlate?userId=${userId}&token=${replyToken}`,
+                                            },
+                                        ],
+                                    },
                                 ],
                             },
                         },
@@ -443,14 +443,14 @@ router.post("/", async (req, res) => {
                     const data = image.bitmap;
 
                     // อ่าน QR code ด้วย jsQR
-                    let qrCode = jsQR(data.data, data.width, data.height);
+                    let qrCode = await jsQR(data.data, data.width, data.height);
                     if (!qrCode) {
                         const resizedImageBuffer = await sharp(imageBuffer)
                             .resize({ width: image.bitmap.width * 2, height: image.bitmap.height * 2 }) // ปรับขนาดเป็น 800x600
                             .toBuffer();
                         image = await Jimp.read(resizedImageBuffer);
                         const { data, width, height } = image.bitmap;
-                        qrCode = jsQR(data, width, height);
+                        qrCode = await jsQR(data, width, height);
                     }
                     const getTrans = await Transaction.findOne({
                         where: {
