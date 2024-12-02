@@ -112,3 +112,29 @@ export async function finePayment(userId, license) {
     await transaction.commit();
     return createdTransaction
 }
+
+export async function changePlateLicense(userId, oldLicense, newLicense) {
+    const transaction = await sequelize.transaction()
+    const strNewLicense = newLicense.replace(/\s+/g, '')
+    const strOldLicense = oldLicense.replace(/\s+/g, '')
+    const licenseData = await License.findOne({
+        where: {
+            userId,
+            license: strOldLicense,
+        }
+    })
+    if (licenseData && licenseData.status === false) {
+        const updatedLicense = await licenseData.update({
+            license: strNewLicense
+        }, transaction)
+
+        await transaction.commit()
+        return updatedLicense
+    } else if (licenseData.status === true) {
+        await transaction.rollback()
+        throw new Error('กรุณานำรถออกจากลานจอดก่อน ขอบคุณค่ะ')
+    } else {
+        await transaction.rollback()
+        throw new Error('ไม่พบเลขทะเบียน')
+    }
+}
