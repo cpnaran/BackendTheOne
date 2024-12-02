@@ -13,6 +13,7 @@ import services from "../services/index.js";
 import feature from "../feature/index.js";
 import LogData from "../models/LogData.js";
 import { Op, where } from "sequelize";
+import sharp from 'sharp'
 const router = express.Router();
 config();
 
@@ -437,12 +438,20 @@ router.post("/", async (req, res) => {
                     })
                     const imageBuffer = Buffer.from(responseImg.data);
                     // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
-                    const image = await Jimp.read(imageBuffer);
-                    const { data, width, height } = image.bitmap;
+                    let image = await Jimp.read(imageBuffer);
+                    image.contrast(0.5);
+                    const data = image.bitmap;
 
                     // อ่าน QR code ด้วย jsQR
-                    const qrCode = jsQR(data, width, height);
-
+                    let qrCode = jsQR(data.data, data.width, data.height);
+                    if (!qrCode) {
+                        const resizedImageBuffer = await sharp(imageBuffer)
+                            .resize({ width: image.bitmap.width * 2, height: image.bitmap.height * 2 }) // ปรับขนาดเป็น 800x600
+                            .toBuffer();
+                        image = await Jimp.read(resizedImageBuffer);
+                        const { data, width, height } = image.bitmap;
+                        qrCode = jsQR(data, width, height);
+                    }
                     const getTrans = await Transaction.findOne({
                         where: {
                             userId,
