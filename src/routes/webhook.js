@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
                                         ],
                                     },
                                     {
-                                        thumbnailImageUrl: 'https://drive.google.com/uc?id=1vlr92XLjxD708UUMsXKNcJAUpoAhP--q',
+                                        thumbnailImageUrl: 'https://drive.google.com/uc?id=182ryX68DCHJUhO6f2eB_ZMrV7Lpe_dAp',
                                         title: 'เปลี่ยนทะเบียน',
                                         text: 'เปลี่ยนทะเบียน',
                                         actions: [
