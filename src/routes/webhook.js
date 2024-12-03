@@ -13,6 +13,7 @@ import services from "../services/index.js";
 import feature from "../feature/index.js";
 import LogData from "../models/LogData.js";
 import { Op, where } from "sequelize";
+import jsQREs6 from "jsqr-es6";
 import sharp from 'sharp'
 const router = express.Router();
 config();
@@ -445,12 +446,13 @@ router.post("/", async (req, res) => {
                     // อ่าน QR code ด้วย jsQR
                     let qrCode = await jsQR(data.data, data.width, data.height);
                     if (!qrCode) {
-                        const resizedImageBuffer = await sharp(imageBuffer)
-                            .resize({ width: image.bitmap.width * 2, height: image.bitmap.height * 2 }) // ปรับขนาดเป็น 800x600
-                            .toBuffer();
-                        image = await Jimp.read(resizedImageBuffer);
-                        const { data, width, height } = image.bitmap;
-                        qrCode = await jsQR(data, width, height);
+                        console.log('อ่าน QR ซ้ำอีกรอบหนึ่ง')
+                        // const resizedImageBuffer = await sharp(imageBuffer)
+                        //     .resize({ width: image.bitmap.width * 2, height: image.bitmap.height * 2 }) // ปรับขนาดเป็น 800x600
+                        //     .toBuffer();
+                        // image = await Jimp.read(resizedImageBuffer);
+                        // const { data, width, height } = image.bitmap;
+                        qrCode = await jsQREs6(data, data.width, data.height);
                     }
                     const getTrans = await Transaction.findOne({
                         where: {
@@ -611,17 +613,7 @@ router.post("/", async (req, res) => {
                                     },
                                 }
                             );
-                            // await transaction.commit();
                         } else {
-                            // const data = {
-                            //     replyToken,
-                            //     messages: [
-                            //         {
-                            //             type: "text",
-                            //             text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
-                            //         },
-                            //     ],
-                            // };
                             const data = {
                                 replyToken,
                                 messages: [
