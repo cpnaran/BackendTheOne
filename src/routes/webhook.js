@@ -2,7 +2,6 @@ import express from "express";
 import { config } from "dotenv";
 import License from "../models/License.js";
 import axios from "axios";
-import jsQR from "jsqr";
 import { Jimp } from "jimp";
 import Transaction from "../models/Transaction.js";
 import Package from "../models/Package.js";
@@ -13,7 +12,7 @@ import services from "../services/index.js";
 import feature from "../feature/index.js";
 import LogData from "../models/LogData.js";
 import { Op, where } from "sequelize";
-import jsQREs6 from "jsqr-es6";
+import jsQR from "jsqr-es6";
 import sharp from 'sharp'
 const router = express.Router();
 config();
@@ -452,7 +451,7 @@ router.post("/", async (req, res) => {
                         //     .toBuffer();
                         // image = await Jimp.read(resizedImageBuffer);
                         // const { data, width, height } = image.bitmap;
-                        qrCode = await jsQREs6(data, data.width, data.height);
+                        qrCode = await jsQR(data, data.width, data.height);
                     }
                     const getTrans = await Transaction.findOne({
                         where: {
