@@ -479,13 +479,13 @@ router.post("/", async (req, res) => {
                             const overDays = differenceInDays(a, license.expiredAt)
                             const amount = overDays * 100
                             res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                                data: qrCode.data, amount
+                                data: qrCode.data, amount, log: true
                             }, {
                                 headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
                             })
                         } else {
                             res = await axios.post(`${process.env.URL_SLIP_OK}`, {
-                                data: qrCode.data, amount: getTrans.amount
+                                data: qrCode.data, amount: getTrans.amount, log: true
                             }, {
                                 headers: { 'x-authorization': `${process.env.API_KEY_SLIP_OK}` }
                             })
@@ -648,7 +648,7 @@ router.post("/", async (req, res) => {
                             messages: [
                                 {
                                     type: "text",
-                                    text: "สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
+                                    text: "สลิปชำระเงินไม่ถูกต้องหรือเป็นสลิปเก่า กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ",
                                 },
                             ],
                         };
