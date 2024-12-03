@@ -32,7 +32,7 @@ export async function renewLicense(userId, packageId, license) {
                     paymentState: 'PENDING',
                     license,
                     amount
-                })
+                }, { transaction })
                 const packageData = {
                     amount,
                     package: `ชำระค่าปรับ ${differenceInDays(dateTime, licenseExpired)} วัน`
@@ -63,6 +63,7 @@ export async function renewLicense(userId, packageId, license) {
             packageId,
             paymentState: 'PENDING',
             license: str,
+            amount: packageData.amount
         }, { transaction })
 
         const urlQrPayment = await services.promtpayQR.generatePromptPayQR({ amount: packageData.amount })
@@ -126,7 +127,7 @@ export async function changePlateLicense(userId, oldLicense, newLicense) {
     if (licenseData && licenseData.status === false) {
         const updatedLicense = await licenseData.update({
             license: strNewLicense
-        }, transaction)
+        }, { transaction })
 
         await transaction.commit()
         return updatedLicense
