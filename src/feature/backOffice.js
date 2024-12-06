@@ -514,12 +514,12 @@ export const checkExistingLicense = async (id) => {
   return doc;
 };
 
-export const AddDays = async (id, days = 0) => {
+export const AddDays = async (id, day = 0) => {
   const transaction = await sequelize.transaction();
   try {
     const doc = await checkExistingLicense(id);
     if (doc) {
-      const added = addDays(doc.expiredAt, days);
+      const added = addDays(doc.expiredAt, day);
 
       await License.update(
         {
