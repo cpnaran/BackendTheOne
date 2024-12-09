@@ -28,6 +28,42 @@ router.post("/", async (req, res) => {
         const method = intentName ? intentName.split(" ") : [];
         console.log("Intent ที่ถูกเรียกใช้งาน:", intentName);
         let response;
+        const events = req.body.events;
+
+        events.forEach(async event => {
+            if (event.type === 'postback') {
+                // ส่งข้อความใหม่ทับข้อความเดิม
+                console.log('webhook.js 36 ', event.postback.data)
+                client.replyMessage(event.replyToken, {
+                    type: 'text',
+                    text: 'ยืนยันการออกสำเร็จ',
+                });
+                const licenseData = await License.findOne({
+                    where: {
+                        license: event.postback.data,
+                        expiredAt: {
+                            [Op.gt]: dateTime
+                        }
+                    }
+                })
+                console.log('webhook.js 49 ', licenseData)
+                if (licenseData) {
+                    await licenseData.update({
+                        status: false
+                    }, { transaction })
+                    const latestLog = await LogData.findOne({
+                        where: { license: event.postback.data },
+                        order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
+                    });
+                    await latestLog.update({
+                        checkOutAt: new Date()
+                    }, { transaction })
+                    console.log('อัพเดททะเบียน ขาออก ')
+                    // await feature.logData.openGate() //TODO: close for test
+                }
+            }
+        });
+
         switch (method[0]) {
             case "สมัครสมาชิก/จัดการ":
                 response = {
@@ -398,32 +434,32 @@ router.post("/", async (req, res) => {
                     //await transaction.commit();
                 }
                 break;
-            case "ยืนยันหมายเลขทะเบียน":
-                console.log(`webhook.js:395 ยืนยันหมายเลขทะเบียน`)
-                const licenseData = await License.findOne({
-                    where: {
-                        license: method[1],
-                        expiredAt: {
-                            [Op.gt]: dateTime
-                        }
-                    }
-                })
-                console.log(`webhook.js:404 ${license}`)
-                if (licenseData) {
-                    await licenseData.update({
-                        status: false
-                    }, { transaction })
-                    const latestLog = await LogData.findOne({
-                        where: { license: method[1] },
-                        order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
-                    });
-                    await latestLog.update({
-                        checkOutAt: new Date()
-                    }, { transaction })
+            // case "ยืนยันหมายเลขทะเบียน":
+            //     console.log(`webhook.js:395 ยืนยันหมายเลขทะเบียน`)
+            //     const licenseData = await License.findOne({
+            //         where: {
+            //             license: method[1],
+            //             expiredAt: {
+            //                 [Op.gt]: dateTime
+            //             }
+            //         }
+            //     })
+            //     console.log(`webhook.js:404 ${license}`)
+            //     if (licenseData) {
+            //         await licenseData.update({
+            //             status: false
+            //         }, { transaction })
+            //         const latestLog = await LogData.findOne({
+            //             where: { license: method[1] },
+            //             order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
+            //         });
+            //         await latestLog.update({
+            //             checkOutAt: new Date()
+            //         }, { transaction })
 
-                    await feature.logData.openGate()
-                    console.log('webhook.js:418 open gate')
-                }
+            //         await feature.logData.openGate()
+            //         console.log('webhook.js:418 open gate')
+            //     }
             // await transaction.commit()
             default:
                 console.log("🚀 ~ file: webhook.js:556 ~ default:");
