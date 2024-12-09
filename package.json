@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@line/bot-sdk": "^9.5.0",
     "@mhoc/axios-digest-auth": "^0.8.0",
     "axios": "^1.7.7",
     "axios-digest": "^0.3.0",
