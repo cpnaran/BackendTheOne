@@ -13,6 +13,7 @@ import services from "../services/index.js";
 import feature from "../feature/index.js";
 import LogData from "../models/LogData.js";
 import { Op, where } from "sequelize";
+import { Client } from '@line/bot-sdk';
 // import jsQR from "jsqr-es6";
 import sharp from 'sharp'
 const router = express.Router();
@@ -22,7 +23,12 @@ router.post("/", async (req, res) => {
     const replyToken = req.body.events[0].replyToken;
     const userId = req.body.events[0].source.userId;
     const channelAccessToken = process.env.ACCESS_TOKEN;
+    const channelSecret = process.env.CHANNEL_SECRET;
     const transaction = await sequelize.transaction();
+    const client = new Client({
+        channelAccessToken: channelAccessToken,
+        channelSecret: channelSecret,
+    });
     try {
         let intentName = req.body.events[0]?.message?.text || undefined;
         const method = intentName ? intentName.split(" ") : [];
@@ -34,7 +40,7 @@ router.post("/", async (req, res) => {
             if (event.type === 'postback') {
                 // ส่งข้อความใหม่ทับข้อความเดิม
                 console.log('webhook.js 36 ', event.postback.data)
-                client.replyMessage(event.replyToken, {
+                await client.replyMessage(event.replyToken, {
                     type: 'text',
                     text: 'ยืนยันการออกสำเร็จ',
                 });
@@ -62,6 +68,7 @@ router.post("/", async (req, res) => {
                     // await feature.logData.openGate() //TODO: close for test
                 }
             }
+            return
         });
 
         switch (method[0]) {

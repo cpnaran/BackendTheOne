@@ -57,6 +57,7 @@ jobs:
           echo "IP_USERNAME=${{secrets.IP_USERNAME}}" >> .env
           echo "IP_PASSWORD=${{secrets.IP_PASSWORD}}" >> .env
           echo "URL_CAMERA=${{secrets.URL_CAMERA}}" >> .env
+          echo "CHANNEL_SECRET=${{secrets.CHANNEL_SECRET}}" >> .env
 
       - name: Run Docker Container
         run: docker run --restart=always --env-file .env -d -p 3000:3000 --name backendtheone-container theoneparking/backendtheone
