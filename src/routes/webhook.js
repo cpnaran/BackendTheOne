@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
         console.log("Intent ที่ถูกเรียกใช้งาน:", intentName);
         let response;
         const events = req.body.events;
-
+        const dateTime = new Date()
         events.forEach(async event => {
             if (event.type === 'postback') {
                 // ส่งข้อความใหม่ทับข้อความเดิม
