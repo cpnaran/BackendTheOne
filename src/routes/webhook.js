@@ -665,7 +665,7 @@ router.post("/", async (req, res) => {
                 }
                 else {
                     // events.forEach(async event => {
-                    const event = req.body.event[0] //add
+                    const event = req.body.events[0] //add
                     if (event?.type === 'postback') {
                         // ส่งข้อความใหม่ทับข้อความเดิม
                         console.log('webhook.js 670 ', event.postback.data)
