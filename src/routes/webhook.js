@@ -36,29 +36,28 @@ router.post("/", async (req, res) => {
         let response;
         const events = req.body.events;
         const dateTime = new Date()
+        const buttonExpiredTime = 1 * 60 * 1000
         events.forEach(async event => {
             if (event.type === 'postback') {
                 // ส่งข้อความใหม่ทับข้อความเดิม
                 console.log('webhook.js 36 ', event.postback.data)
-                await client.replyMessage(event.replyToken, {
-                    type: 'text',
-                    text: 'ยืนยันการออกสำเร็จ',
-                });
+                const [textLicense, time] = event.postback.data.split('=')
+                const sentTime = new Date(time)
                 const licenseData = await License.findOne({
                     where: {
-                        license: event.postback.data,
+                        license: textLicense,
                         expiredAt: {
                             [Op.gt]: dateTime
                         }
                     }
                 })
                 console.log('webhook.js 49 ', licenseData)
-                if (licenseData) {
+                if (licenseData && dateTime - sentTime < buttonExpiredTime) {
                     await licenseData.update({
                         status: false
                     }, { transaction })
                     const latestLog = await LogData.findOne({
-                        where: { license: event.postback.data },
+                        where: { license: textLicense },
                         order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
                     });
                     await latestLog.update({
@@ -66,8 +65,23 @@ router.post("/", async (req, res) => {
                     }, { transaction })
                     console.log('อัพเดททะเบียน ขาออก ')
                     // await feature.logData.openGate() //TODO: close for test
+                    await client.replyMessage(event.replyToken, {
+                        type: 'text',
+                        text: 'ยืนยันการออกสำเร็จ',
+                    });
+                } else if (dateTime - sentTime > buttonExpiredTime) {
+                    await client.replyMessage(event.replyToken, {
+                        type: 'text',
+                        text: 'ปุ่มหมดอายุแล้ว',
+                    });
+                } else {
+                    await client.replyMessage(event.replyToken, {
+                        type: 'text',
+                        text: 'ไม่พบหมายเลขทะเบียน',
+                    });
                 }
             }
+            await transaction.commit()
             return
         });
 
