@@ -697,78 +697,79 @@ router.post("/", async (req, res) => {
                             });
                             console.log(`latestLog`, latestLog)
                             console.log(`latestLog`, latestLog.id)
-                            await LogData.update({
-                                checkOutAt: new Date()
-                            }, {
-                                where: {
-                                    id: latestLog.id
-                                },
-                                transaction: tx
-                            }) //add
-                            console.log('อัพเดททะเบียน ขาออก ')
-                            // await feature.logData.openGate() //TODO: close for test
-                            await client.replyMessage(event.replyToken, {
-                                type: 'text',
-                                text: 'ยืนยันการออกสำเร็จ',
-                            });
-                            await tx.commit() //add
-                        } else if (dateTime - sentTime > buttonExpiredTime) {
-                            await client.replyMessage(event.replyToken, {
-                                type: 'text',
-                                text: 'ปุ่มหมดอายุแล้ว',
-                            });
-                        } else {
-                            await client.replyMessage(event.replyToken, {
-                                type: 'text',
-                                text: 'ไม่พบหมายเลขทะเบียน',
-                            });
+                            if (latestLog) {
+                                await LogData.update({
+                                    checkOutAt: new Date()
+                                }, {
+                                    where: {
+                                        id: latestLog.id
+                                    },
+                                    transaction: tx
+                                }) //add}
+                                console.log('อัพเดททะเบียน ขาออก ')
+                                // await feature.logData.openGate() //TODO: close for test
+                                await client.replyMessage(event.replyToken, {
+                                    type: 'text',
+                                    text: 'ยืนยันการออกสำเร็จ',
+                                });
+                                await tx.commit() //add
+                            } else if (dateTime - sentTime > buttonExpiredTime) {
+                                await client.replyMessage(event.replyToken, {
+                                    type: 'text',
+                                    text: 'ปุ่มหมดอายุแล้ว',
+                                });
+                            } else {
+                                await client.replyMessage(event.replyToken, {
+                                    type: 'text',
+                                    text: 'ไม่พบหมายเลขทะเบียน',
+                                });
+                            }
                         }
+                        // });
                     }
-                    // });
                 }
-        }
-        await transaction.commit()
-        res.json("SUCCESS");
-    } catch (error) {
-        console.log(">>>>>>>>>>>>>>>", error);
-        await transaction.rollback();
-        if (error?.response?.status === 400) {
-            const data = {
-                replyToken,
-                messages: [
-                    {
-                        type: 'text',
-                        text: 'สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ'
+                await transaction.commit()
+                res.json("SUCCESS");
+        } catch (error) {
+            console.log(">>>>>>>>>>>>>>>", error);
+            await transaction.rollback();
+            if (error?.response?.status === 400) {
+                const data = {
+                    replyToken,
+                    messages: [
+                        {
+                            type: 'text',
+                            text: 'สลิปชำระเงินไม่ถูกต้อง กรุณาตรวจสอบสลิปและส่งใหม่ค่ะ'
+                        },
+                    ]
+                }
+                await axios.post('https://api.line.me/v2/bot/message/reply', data, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${channelAccessToken}`,
                     },
-                ]
+                });
             }
-            await axios.post('https://api.line.me/v2/bot/message/reply', data, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${channelAccessToken}`,
-                },
-            });
+            //  else {
+            //     console.error("Error processing the webhook:", error);
+            //     const data = {
+            //         replyToken,
+            //         messages: [
+            //             {
+            //                 type: "text",
+            //                 text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
+            //             },
+            //         ],
+            //     };
+            //     await axios.post("https://api.line.me/v2/bot/message/reply", data, {
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //             Authorization: `Bearer ${channelAccessToken}`,
+            //         },
+            //     });
+            res.json({ message: error });
+            // }
         }
-        //  else {
-        //     console.error("Error processing the webhook:", error);
-        //     const data = {
-        //         replyToken,
-        //         messages: [
-        //             {
-        //                 type: "text",
-        //                 text: "กรุณารอสักครู่นะคะ แอดมินจะรีบตอบกลับค่ะ",
-        //             },
-        //         ],
-        //     };
-        //     await axios.post("https://api.line.me/v2/bot/message/reply", data, {
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             Authorization: `Bearer ${channelAccessToken}`,
-        //         },
-        //     });
-        res.json({ message: error });
-        // }
-    }
-});
+    });
 
 export default router;
