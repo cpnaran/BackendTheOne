@@ -695,9 +695,14 @@ router.post("/", async (req, res) => {
                                 where: { license: textLicense },
                                 order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
                             });
-                            await latestLog.update({
+                            await LogData.update({
                                 checkOutAt: new Date()
-                            }, { transaction: tx }) //add
+                            }, {
+                                where: {
+                                    id: latestLog.id
+                                },
+                                transaction: tx
+                            } //add
                             console.log('อัพเดททะเบียน ขาออก ')
                             // await feature.logData.openGate() //TODO: close for test
                             await client.replyMessage(event.replyToken, {
