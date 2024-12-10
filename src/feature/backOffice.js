@@ -387,7 +387,6 @@ export const getUsageTime = async () => {
 
   return graph;
 };
-
 export const getCarList = async ({ page, per_page, license }) => {
   // Calculate limit and offset
   const limit = per_page ? parseInt(per_page, 10) : undefined;
@@ -424,14 +423,20 @@ export const getCarList = async ({ page, per_page, license }) => {
 
   let new_obj_licenses = {};
   for (const license of list.rows) {
-    new_obj_licenses[license.userId] = license;
+    if (!new_obj_licenses[license.userId]) {
+      new_obj_licenses[license.userId] = [];
+    }
+    new_obj_licenses[license.userId].push(license);
   }
+
   let result = [];
 
   for (const user of user_list) {
     if (new_obj_licenses[user.userId]) {
-      new_obj_licenses[user.userId].fullName = user.fullName;
-      result.push(new_obj_licenses[user.userId]);
+      for (const license of new_obj_licenses[user.userId]) {
+        license.fullName = user.fullName;
+        result.push(license);
+      }
     }
   }
 
