@@ -437,7 +437,7 @@ router.post("/", async (req, res) => {
             // await transaction.commit()
             default:
                 console.log("🚀 ~ file: webhook.js:556 ~ default:");
-                if (req.body.events[0].message.type === "image") {
+                if (req.body.events[0]?.message?.type === "image") {
                     console.log(
                         "******* inside  if (req.body.events[0].message.type === 'image') "
                     );
