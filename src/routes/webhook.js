@@ -695,6 +695,8 @@ router.post("/", async (req, res) => {
                                 where: { license: textLicense },
                                 order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
                             });
+                            console.log(`latestLog`, latestLog)
+                            console.log(`latestLog`, latestLog.id)
                             await LogData.update({
                                 checkOutAt: new Date()
                             }, {
