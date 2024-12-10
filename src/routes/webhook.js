@@ -81,8 +81,6 @@ router.post("/", async (req, res) => {
                     });
                 }
             }
-            await transaction.commit()
-            return
         });
 
         switch (method[0]) {
