@@ -696,7 +696,6 @@ router.post("/", async (req, res) => {
                                 order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
                             });
                             console.log(`latestLog`, latestLog)
-                            console.log(`latestLog`, latestLog.id)
                             if (latestLog) {
                                 await LogData.update({
                                     checkOutAt: new Date()
