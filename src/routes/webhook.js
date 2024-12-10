@@ -702,7 +702,7 @@ router.post("/", async (req, res) => {
                                     id: latestLog.id
                                 },
                                 transaction: tx
-                            } //add
+                            }) //add
                             console.log('อัพเดททะเบียน ขาออก ')
                             // await feature.logData.openGate() //TODO: close for test
                             await client.replyMessage(event.replyToken, {
