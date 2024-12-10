@@ -692,7 +692,7 @@ router.post("/", async (req, res) => {
                             }) //add
                             console.log(`webhook.js :693 `)
                             const latestLog = await LogData.findOne({
-                                where: { license: textLicense },
+                                where: { license: licenseData.license },
                                 order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
                             });
                             console.log(`latestLog`, latestLog)
