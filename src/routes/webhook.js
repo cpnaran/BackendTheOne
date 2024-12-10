@@ -665,7 +665,7 @@ router.post("/", async (req, res) => {
                 }
                 else {
                     // events.forEach(async event => {
-                    const event = event[0]
+                    const event = req.body.event[0] //add
                     if (event?.type === 'postback') {
                         // ส่งข้อความใหม่ทับข้อความเดิม
                         console.log('webhook.js 670 ', event.postback.data)
@@ -681,22 +681,24 @@ router.post("/", async (req, res) => {
                         })
                         console.log('webhook.js 681 ', licenseData)
                         if (licenseData && dateTime - sentTime < buttonExpiredTime) {
+                            const tx = sequelize.transaction() //add
                             await licenseData.update({
                                 status: false
-                            }, { transaction })
+                            }, { transaction: tx }) //add
                             const latestLog = await LogData.findOne({
                                 where: { license: textLicense },
                                 order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
                             });
                             await latestLog.update({
                                 checkOutAt: new Date()
-                            }, { transaction })
+                            }, { transaction: tx }) //add
                             console.log('อัพเดททะเบียน ขาออก ')
                             // await feature.logData.openGate() //TODO: close for test
                             await client.replyMessage(event.replyToken, {
                                 type: 'text',
                                 text: 'ยืนยันการออกสำเร็จ',
                             });
+                            await tx.commit() //add
                         } else if (dateTime - sentTime > buttonExpiredTime) {
                             await client.replyMessage(event.replyToken, {
                                 type: 'text',
