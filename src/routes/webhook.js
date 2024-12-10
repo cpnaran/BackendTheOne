@@ -681,10 +681,16 @@ router.post("/", async (req, res) => {
                         })
                         console.log('webhook.js 681 ', licenseData)
                         if (licenseData && dateTime - sentTime < buttonExpiredTime) {
-                            const tx = sequelize.transaction() //add
-                            await licenseData.update({
+                            const tx = await sequelize.transaction() //add
+                            await License.update({
                                 status: false
-                            }, { transaction: tx }) //add
+                            }, {
+                                where: {
+                                    license: licenseData.license
+                                },
+                                transaction: tx
+                            }) //add
+                            console.log(`webhook.js :693 `)
                             const latestLog = await LogData.findOne({
                                 where: { license: textLicense },
                                 order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
