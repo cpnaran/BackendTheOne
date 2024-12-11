@@ -195,7 +195,7 @@ export async function createLogData(deviceId, params) {
                                                 "type": "postback",
                                                 "label": "ยืนยัน",
                                                 // "text": `ยืนยันหมายเลขทะเบียน ${strLicense}`
-                                                "data": `${strLicense}=${new Date()}`
+                                                "data": `${strLicense}`
                                             },
                                             "color": "#1DB446"
                                         }

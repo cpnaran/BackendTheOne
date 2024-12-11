@@ -705,7 +705,7 @@ router.post("/", async (req, res) => {
                                 })
                             }
                             console.log('อัพเดททะเบียน ขาออก ')
-                            // await feature.logData.openGate() //TODO: close for test
+                            await feature.logData.openGate()
                             await client.replyMessage(event.replyToken, {
                                 type: 'text',
                                 text: 'ยืนยันการออกสำเร็จ',
