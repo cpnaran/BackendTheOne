@@ -310,7 +310,7 @@ export async function createLogData(deviceId, params) {
                         },
                     },
                 }
-                await replyToUser(checkLicense.userId, message)
+                await replyToUser(licenseData.userId, message)
                 console.log(`logData.js:274 ส่งแจ้งค่าปรับ`)
             }
 
@@ -331,10 +331,7 @@ export async function replyToUser(userId, message) {
             {
                 to: userId,
                 messages: [
-                    {
-                        type: 'text',
-                        text: message,
-                    },
+                    message
                 ],
             },
             {
