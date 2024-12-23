@@ -102,124 +102,132 @@ export async function createLogData(deviceId, params) {
 
                 await openGate()
             } else {
-                const message = {
-                    to: checkLicense.userId,
-                    messages: [
-                        {
-                            type: 'flex',
-                            altText: 'ยืนยันการนำรถออก',
-                            contents: {
-                                "type": "bubble",
-                                "body": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": "ยืนยันการนำรถออก",
-                                            "weight": "bold",
-                                            "size": "xl",
-                                            "align": "center"
-                                        },
-                                        {
-                                            "type": "box",
-                                            "layout": "vertical",
-                                            "margin": "lg",
-                                            "spacing": "sm",
-                                            "contents": [
-                                                {
-                                                    "type": "box",
-                                                    "layout": "baseline",
-                                                    "spacing": "sm",
-                                                    "contents": [
-                                                        {
-                                                            "type": "text",
-                                                            "text": "หมายเลขทะเบียน",
-                                                            "wrap": true,
-                                                            "color": "#666666",
-                                                            "size": "md",
-                                                            "flex": 5,
-                                                            "align": "center"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "box",
-                                                    "layout": "baseline",
-                                                    "spacing": "sm",
-                                                    "contents": [
-                                                        {
-                                                            "type": "text",
-                                                            "text": `${strLicense}`,
-                                                            "wrap": true,
-                                                            "color": "#00b900",
-                                                            "size": "xl",
-                                                            "flex": 5,
-                                                            "weight": "bold",
-                                                            "style": "normal",
-                                                            "decoration": "none",
-                                                            "align": "center"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "box",
-                                                    "layout": "baseline",
-                                                    "spacing": "sm",
-                                                    "contents": [
-                                                        {
-                                                            "type": "text",
-                                                            "text": "เพื่อความปลอดภัยสำหรับลูกค้ากรุณากดยืนยันก่อนที่จะนำรถออก",
-                                                            "wrap": true,
-                                                            "color": "#FF0000",
-                                                            "size": "xs",
-                                                            "flex": 5,
-                                                            "align": "center"
-                                                        }
-                                                    ]
-                                                },
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "footer": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "spacing": "sm",
-                                    "contents": [
-                                        {
-                                            "type": "button",
-                                            "style": "primary",
-                                            "height": "md",
-                                            "action": {
-                                                "type": "postback",
-                                                "label": "ยืนยัน",
-                                                // "text": `ยืนยันหมายเลขทะเบียน ${strLicense}`
-                                                "data": `${strLicense}`
-                                            },
-                                            "color": "#1DB446"
-                                        }
-                                    ],
-                                    "flex": 0
-                                }
-                            },
-                        }]
-                }
-                await axios.post('https://api.line.me/v2/bot/message/push', message,
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${channelAccessToken}`,
+                // const message = {
+                //     to: checkLicense.userId,
+                //     messages: [
+                //         {
+                //             type: 'flex',
+                //             altText: 'ยืนยันการนำรถออก',
+                //             contents: {
+                //                 "type": "bubble",
+                //                 "body": {
+                //                     "type": "box",
+                //                     "layout": "vertical",
+                //                     "contents": [
+                //                         {
+                //                             "type": "text",
+                //                             "text": "ยืนยันการนำรถออก",
+                //                             "weight": "bold",
+                //                             "size": "xl",
+                //                             "align": "center"
+                //                         },
+                //                         {
+                //                             "type": "box",
+                //                             "layout": "vertical",
+                //                             "margin": "lg",
+                //                             "spacing": "sm",
+                //                             "contents": [
+                //                                 {
+                //                                     "type": "box",
+                //                                     "layout": "baseline",
+                //                                     "spacing": "sm",
+                //                                     "contents": [
+                //                                         {
+                //                                             "type": "text",
+                //                                             "text": "หมายเลขทะเบียน",
+                //                                             "wrap": true,
+                //                                             "color": "#666666",
+                //                                             "size": "md",
+                //                                             "flex": 5,
+                //                                             "align": "center"
+                //                                         }
+                //                                     ]
+                //                                 },
+                //                                 {
+                //                                     "type": "box",
+                //                                     "layout": "baseline",
+                //                                     "spacing": "sm",
+                //                                     "contents": [
+                //                                         {
+                //                                             "type": "text",
+                //                                             "text": `${strLicense}`,
+                //                                             "wrap": true,
+                //                                             "color": "#00b900",
+                //                                             "size": "xl",
+                //                                             "flex": 5,
+                //                                             "weight": "bold",
+                //                                             "style": "normal",
+                //                                             "decoration": "none",
+                //                                             "align": "center"
+                //                                         }
+                //                                     ]
+                //                                 },
+                //                                 {
+                //                                     "type": "box",
+                //                                     "layout": "baseline",
+                //                                     "spacing": "sm",
+                //                                     "contents": [
+                //                                         {
+                //                                             "type": "text",
+                //                                             "text": "เพื่อความปลอดภัยสำหรับลูกค้ากรุณากดยืนยันก่อนที่จะนำรถออก",
+                //                                             "wrap": true,
+                //                                             "color": "#FF0000",
+                //                                             "size": "xs",
+                //                                             "flex": 5,
+                //                                             "align": "center"
+                //                                         }
+                //                                     ]
+                //                                 },
+                //                             ]
+                //                         }
+                //                     ]
+                //                 },
+                //                 "footer": {
+                //                     "type": "box",
+                //                     "layout": "vertical",
+                //                     "spacing": "sm",
+                //                     "contents": [
+                //                         {
+                //                             "type": "button",
+                //                             "style": "primary",
+                //                             "height": "md",
+                //                             "action": {
+                //                                 "type": "postback",
+                //                                 "label": "ยืนยัน",
+                //                                 // "text": `ยืนยันหมายเลขทะเบียน ${strLicense}`
+                //                                 "data": `${strLicense}`
+                //                             },
+                //                             "color": "#1DB446"
+                //                         }
+                //                     ],
+                //                     "flex": 0
+                //                 }
+                //             },
+                //         }]
+                // }
+                // await axios.post('https://api.line.me/v2/bot/message/push', message,
+                //     {
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //             'Authorization': `Bearer ${channelAccessToken}`,
+                //         },
+                //     });
+                await License.update({ status: false }, { where: { license: strLicense }, transaction })
+                const latestLog = await LogData.findOne({
+                    where: { license: licenseData.license },
+                    order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
+                });
+                if (latestLog) {
+                    await LogData.update({
+                        checkOutAt: new Date()
+                    }, {
+                        where: {
+                            id: latestLog.id
                         },
-                    });
-                // await LogData.update({ checkOutAt: new Date(params.picTime) }, {
-                //     where: {
-                //         license: strLicense
-                //     }, transaction
-                // })
-                // await License.update({ status: false }, { where: { license: strLicense }, transaction })
-
-                // await openGate()
+                        transaction: tx
+                    })
+                }
+                await openGate()
 
             }
         } else {
