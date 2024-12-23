@@ -214,7 +214,7 @@ export async function createLogData(deviceId, params) {
                 //     });
                 await License.update({ status: false }, { where: { license: strLicense }, transaction })
                 const latestLog = await LogData.findOne({
-                    where: { license: licenseData.license },
+                    where: { license: checkLicense.license },
                     order: [['createdAt', 'DESC']], // เรียงลำดับจากวันที่ล่าสุด
                 });
                 if (latestLog) {
@@ -224,7 +224,7 @@ export async function createLogData(deviceId, params) {
                         where: {
                             id: latestLog.id
                         },
-                        transaction: tx
+                        transaction
                     })
                 }
                 await openGate()
