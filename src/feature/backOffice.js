@@ -26,7 +26,7 @@ export async function getMonthlyRevenue(filter = null) {
     ? (now_date = new Date(`${year}/${filter + 1}/5`))
     : (now_date = now_date);
 
-  const start_of_month = startOfMonth(now_date);
+  const start_of_month = addHours(startOfMonth(now_date), 7);
 
   const end_of_month = endOfMonth(now_date);
   //paymentState = success only
