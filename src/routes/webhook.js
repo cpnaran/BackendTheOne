@@ -14,6 +14,7 @@ import feature from "../feature/index.js";
 import LogData from "../models/LogData.js";
 import { Op, where } from "sequelize";
 import { Client } from '@line/bot-sdk';
+import { BrowserQRCodeReader } from '@zxing/library';
 // import jsQR from "jsqr-es6";
 import sharp from 'sharp'
 const router = express.Router();
@@ -461,6 +462,12 @@ router.post("/", async (req, res) => {
                         image = await Jimp.read(resizedImageBuffer);
                         const { data, width, height } = image.bitmap;
                         qrCode = await jsQR(data, width, height);
+                    }
+                    if (!qrCode) {
+                        console.log('ลองใช้ zxing-js/library ในการอ่าน QR code');
+                        const codeReader = new BrowserQRCodeReader();
+                        const result = await codeReader.decodeFromImage(undefined, imageBuffer);
+                        qrCode = result ? { data: result.text } : null;
                     }
                     const getTrans = await Transaction.findOne({
                         where: {

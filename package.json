@@ -14,6 +14,7 @@
   "dependencies": {
     "@line/bot-sdk": "^9.5.0",
     "@mhoc/axios-digest-auth": "^0.8.0",
+    "@zxing/library": "^0.21.3",
     "axios": "^1.7.7",
     "axios-digest": "^0.3.0",
     "bcryptjs": "^2.4.3",
