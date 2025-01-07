@@ -14,7 +14,8 @@ import feature from "../feature/index.js";
 import LogData from "../models/LogData.js";
 import { Op, where } from "sequelize";
 import { Client } from '@line/bot-sdk';
-import { BrowserQRCodeReader } from '@zxing/library';
+import { BinaryBitmap, BrowserQRCodeReader, HybridBinarizer, RGBLuminanceSource } from '@zxing/library';
+import QrScanner from 'qr-scanner';
 // import jsQR from "jsqr-es6";
 import sharp from 'sharp'
 const router = express.Router();
@@ -464,10 +465,16 @@ router.post("/", async (req, res) => {
                         qrCode = await jsQR(data, width, height);
                     }
                     if (!qrCode) {
+                        let qrScanner = new QrScanner();
+                        qrCode = qrScanner.scanImage(image.bitmap) || undefined;
+                    }
+                    if (!qrCode) {
                         console.log('ลองใช้ zxing-js/library ในการอ่าน QR code');
                         const codeReader = new BrowserQRCodeReader();
-                        const result = await codeReader.decodeFromImage(undefined, imageBuffer);
-                        qrCode = result ? { data: result.text } : null;
+                        const luminanceSource = new RGBLuminanceSource(data.data, data.width, data.height);
+                        const binaryBitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+                        const result = await codeReader.decode(binaryBitmap);
+                        qrCode = result ? { data: result.getText() } : null;
                     }
                     const getTrans = await Transaction.findOne({
                         where: {
@@ -516,7 +523,7 @@ router.post("/", async (req, res) => {
                                 messages: [
                                     {
                                         type: "text",
-                                        text: "ชำระเงินสำเร็จแล้ว ขอบคุณที่ใช้บริการของเราค่ะ 😊",
+                                        text: "ชำระเงินสำเร็จแล้ว ขอบพระคุณที่ใช้บริการของลานจอดรถ THE ONe ค่ะ  🙏🏻🥰 ทั้งนี้…คุณลูกค้ากดเช็ควันหมดอายุเพื่ออัพเดทวันหมดอายุด้วยนะคะ ❤️",
                                     },
                                 ],
                             };
