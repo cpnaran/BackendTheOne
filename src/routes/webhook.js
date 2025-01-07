@@ -465,6 +465,7 @@ router.post("/", async (req, res) => {
                         qrCode = await jsQR(data, width, height);
                     }
                     if (!qrCode) {
+                        console.log('ลองใช้ qr-scanner ในการอ่าน QR code');
                         let qrScanner = new QrScanner();
                         qrCode = qrScanner.scanImage(image.bitmap) || undefined;
                     }
