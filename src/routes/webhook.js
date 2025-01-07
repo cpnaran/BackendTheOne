@@ -477,6 +477,7 @@ router.post("/", async (req, res) => {
                         const result = await codeReader.decode(binaryBitmap);
                         qrCode = result ? { data: result.getText() } : null;
                     }
+                    console.log(qrCode, ': Text QRCODE')
                     const getTrans = await Transaction.findOne({
                         where: {
                             userId,
