@@ -14,6 +14,7 @@ import LogData from "../models/LogData.js";
 import { Op } from "sequelize";
 import { Client } from '@line/bot-sdk';
 import FormData from 'form-data';
+import fs from 'fs'
 const router = express.Router();
 config();
 
