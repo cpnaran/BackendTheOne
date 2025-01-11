@@ -445,6 +445,9 @@ router.post("/", async (req, res) => {
                         responseType: 'arraybuffer'
                     })
 
+                    const tempFilePath = path.join(__dirname, 'temp_image.jpg');
+
+                    fs.writeFileSync(tempFilePath, imageBuffer);
                     // const imageBuffer = Buffer.from(responseImg.data);
                     // // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
                     // let image = await Jimp.read(imageBuffer);
@@ -484,9 +487,11 @@ router.post("/", async (req, res) => {
                         })
                         const overDays = differenceInDays(a, license.expiredAt)
                         const amount = overDays * 100
-                        res = await postSlipOk(image, amount)
+                        res = await postSlipOk(tempFilePath, amount)
+                        fs.unlinkSync(tempFilePath);
                     } else {
-                        res = await postSlipOk(image, getTrans.amount)
+                        res = await postSlipOk(tempFilePath, getTrans.amount)
+                        fs.unlinkSync(tempFilePath);
                     }
                     // //เช็ค response QR
                     const isValid = res.status == 200 ? true : false;
