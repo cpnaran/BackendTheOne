@@ -16,6 +16,8 @@ import { Client } from '@line/bot-sdk';
 import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
 const router = express.Router();
 config();
 
@@ -445,7 +447,7 @@ router.post("/", async (req, res) => {
                         headers: { 'Authorization': `Bearer ${channelAccessToken}` },
                         responseType: 'arraybuffer'
                     })
-
+                    const __dirname = path.dirname(fileURLToPath(import.meta.url));
                     const tempFilePath = path.join(__dirname, 'temp_image.jpg');
 
                     fs.writeFileSync(tempFilePath, imageBuffer);
