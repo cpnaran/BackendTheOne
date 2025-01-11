@@ -14,10 +14,7 @@ import LogData from "../models/LogData.js";
 import { Op } from "sequelize";
 import { Client } from '@line/bot-sdk';
 import FormData from 'form-data';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
+import fs from 'fs'
 const router = express.Router();
 config();
 
@@ -447,10 +444,8 @@ router.post("/", async (req, res) => {
                         headers: { 'Authorization': `Bearer ${channelAccessToken}` },
                         responseType: 'arraybuffer'
                     })
-                    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-                    const tempFilePath = path.join(__dirname, 'temp_image.jpg');
 
-                    fs.writeFileSync(tempFilePath, image);
+                    const buffer = Buffer.from(image);
                     // const imageBuffer = Buffer.from(responseImg.data);
                     // // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
                     // let image = await Jimp.read(imageBuffer);
@@ -490,11 +485,9 @@ router.post("/", async (req, res) => {
                         })
                         const overDays = differenceInDays(a, license.expiredAt)
                         const amount = overDays * 100
-                        res = await postSlipOk(tempFilePath, amount)
-                        fs.unlinkSync(tempFilePath);
+                        res = await postSlipOk(buffer, amount)
                     } else {
-                        res = await postSlipOk(tempFilePath, getTrans.amount)
-                        fs.unlinkSync(tempFilePath);
+                        res = await postSlipOk(buffer, getTrans.amount)
                     }
                     // //เช็ค response QR
                     const isValid = res.status == 200 ? true : false;
@@ -745,7 +738,7 @@ router.post("/", async (req, res) => {
 
 async function postSlipOk(image, amount) {
     const data = new FormData();
-    data.append('files', fs.createReadStream(image));
+    data.append('files', image, { filename: 'image.jpg', contentType: 'image/jpeg' });
     data.append('log', 'true');
     data.append('amount', amount);
     const response = await axios.post(`${process.env.URL_SLIP_OK}`, data, {
