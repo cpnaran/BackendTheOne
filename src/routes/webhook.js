@@ -444,8 +444,9 @@ router.post("/", async (req, res) => {
                         headers: { 'Authorization': `Bearer ${channelAccessToken}` },
                         responseType: 'arraybuffer'
                     })
-
+                    console.log("🚀 image", image);
                     const buffer = Buffer.from(image);
+                    console.log("🚀 buffer", buffer);
                     // const imageBuffer = Buffer.from(responseImg.data);
                     // // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
                     // let image = await Jimp.read(imageBuffer);
