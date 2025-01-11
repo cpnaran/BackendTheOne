@@ -450,7 +450,7 @@ router.post("/", async (req, res) => {
                     const __dirname = path.dirname(fileURLToPath(import.meta.url));
                     const tempFilePath = path.join(__dirname, 'temp_image.jpg');
 
-                    fs.writeFileSync(tempFilePath, imageBuffer);
+                    fs.writeFileSync(tempFilePath, image);
                     // const imageBuffer = Buffer.from(responseImg.data);
                     // // ใช้ Jimp เพื่อแปลง Buffer เป็นข้อมูลภาพ
                     // let image = await Jimp.read(imageBuffer);
