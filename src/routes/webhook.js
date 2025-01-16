@@ -475,7 +475,7 @@ router.post("/", async (req, res) => {
                     });
                     console.log("🚀 ~ file: webhook.js:557 ~ getPackage:", getPackage);
                     // if (qrCode) {
-                    let res
+                    let response
                     if (getTrans.packageId === `30d27f15-0ace-4263-b789-1c851d20ac6c`) {
                         const a = new Date()
                         a.setHours(0, 0, 0, 0)
@@ -486,12 +486,12 @@ router.post("/", async (req, res) => {
                         })
                         const overDays = differenceInDays(a, license.expiredAt)
                         const amount = overDays * 100
-                        res = await postSlipOk(buffer, amount)
+                        response = await postSlipOk(buffer, amount)
                     } else {
-                        res = await postSlipOk(buffer, getTrans.amount)
+                        response = await postSlipOk(buffer, getTrans.amount)
                     }
                     // //เช็ค response QR
-                    const isValid = res.status == 200 ? true : false;
+                    const isValid = response.status == 200 ? true : false;
                     //ตอบกลับ user
                     if (isValid) {
                         const data = {
