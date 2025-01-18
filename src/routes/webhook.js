@@ -663,7 +663,7 @@ router.post("/", async (req, res) => {
                                 license: textLicense,
                                 status: true,
                                 expiredAt: {
-                                    [Op.gt]: dateTime
+                                    [Op.gte]: dateTime
                                 }
                             }
                         })
