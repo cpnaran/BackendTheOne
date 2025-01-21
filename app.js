@@ -29,6 +29,7 @@ import anprRoutes from "./src/routes/anpr.js";
 import backOfficeRoutes from "./src/routes/backOffice.js";
 import { authenticateToken } from "./src/middleware/auth.js";
 import authRoutes from "./src/routes/auth.js";
+import oAuthRoutes from "./src/routes/oAuth.js";
 console.log(new Date());
 
 app.use(cors());
@@ -48,6 +49,7 @@ app.use("/options", optionRoutes);
 app.use("/license", licenseRoutes);
 app.use("/back-office/", authenticateToken, backOfficeRoutes);
 app.use("/Login", authRoutes);
+app.use("/google", oAuthRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
