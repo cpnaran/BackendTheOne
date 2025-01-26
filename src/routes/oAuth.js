@@ -1,10 +1,10 @@
 import express from 'express'
-import { handleAuthCallback } from '../feature/drive';
+import { handleAuthCallback } from '../middleware/drive.js';
 
 
 const router = express.Router();
 
-router.post('/auth', auth);
+router.get('/auth', auth);
 
 async function auth(req, res, next) {
     const { code } = req.query

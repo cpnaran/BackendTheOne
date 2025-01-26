@@ -1,11 +1,14 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 
 const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
-const TOKEN_PATH = "token.json"; // Store the token in a file
-const CREDENTIALS_PATH = "credentials.json"; // Path to your credentials.json file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const TOKEN_PATH = path.join(__dirname, "token.json");; // Store the token in a file
+const CREDENTIALS_PATH = path.join(__dirname, "credentials.json");
 
 let oAuth2Client;
 let drive;
