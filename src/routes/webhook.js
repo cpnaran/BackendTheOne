@@ -34,6 +34,7 @@ router.post("/", async (req, res) => {
         console.log("Intent ที่ถูกเรียกใช้งาน:", intentName);
         let response;
         const dateTime = new Date()
+        dateTime.setHours(0, 0, 0, 0)
 
         switch (method[0]) {
             case "สมัครสมาชิก/จัดการ":
