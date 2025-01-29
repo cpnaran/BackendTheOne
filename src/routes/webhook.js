@@ -248,10 +248,10 @@ router.post("/", async (req, res) => {
                         }
                     },
                 });
-                if (occupiedSlots > 100) {
-                    occupiedSlots = 100;
+                if (occupiedSlots > 84) {
+                    occupiedSlots = 84;
                 }
-                const availableSlots = 100 - occupiedSlots;
+                const availableSlots = 84 - occupiedSlots;
 
                 response = {
                     replyToken,
@@ -280,7 +280,7 @@ router.post("/", async (req, res) => {
                                     contents: [
                                         {
                                             type: "text",
-                                            text: "จำนวนช่องจอดทั้งหมด: 100",
+                                            text: "จำนวนช่องจอดทั้งหมด: 84",
                                             size: "md",
                                             color: "#333333",
                                         },
