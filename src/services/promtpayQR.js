@@ -1,5 +1,6 @@
 
 import axios from 'axios';
+import sharp from 'sharp'
 import generatePayload from 'promptpay-qr';
 import qrcode from 'qrcode';
 import { config } from 'dotenv';
