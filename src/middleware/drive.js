@@ -1,44 +1,55 @@
-import fs from "fs";
+import fs, { access } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
+import { config } from 'dotenv';
+config()
 
-const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const TOKEN_PATH = path.join(__dirname, "token.json");; // Store the token in a file
-const CREDENTIALS_PATH = path.join(__dirname, "credentials.json");
+// Set up Google Drive API
+const SCOPES = process.env.SCOPE_GOOGLE;
+const TOKEN_PATH = {
+    access_token: process.env.ACCESS_TOKEN_GOOGLE,
+    refresh_token: process.env.REFRESH_TOKEN_GOOGLE,
+    scope: process.env.SCOPE_GOOGLE,
+    token_type: process.env.TOKEN_TYPE_GOOGLE,
+    expiry_date: process.env.EXPIRY_DATE_GOOGLE,
+};
+const CREDENTIALS_PATH = {
+    web: {
+        client_id: process.env.CLIENT_ID_GOOGLE,
+        project_id: process.env.PROJECT_ID_GOOGLE,
+        auth_uri: process.env.AUTH_URI_GOOGLE,
+        token_uri: process.env.TOKEN_URI_GOOGLE,
+        auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_GOOGLE,
+        client_secret: process.env.CLIENT_SECRET_GOOGLE,
+        redirect_uris: [process.env.REDIRECT_URI_GOOGLE],
+    },
+};
+
 
 let oAuth2Client;
 let drive;
 
 // Initialize OAuth2 client
 export function initializeAuth() {
-    fs.readFile(CREDENTIALS_PATH, (err, content) => {
-        if (err) {
-            console.error("Error loading credentials:", err);
-            return;
-        }
-
-        authorize(JSON.parse(content));
-    });
+    authorize(CREDENTIALS_PATH);
 }
 
 // Authorize and set up the OAuth2 client
 function authorize(credentials) {
     const { client_secret, client_id, redirect_uris } = credentials.web;
-    oAuth2Client = new OAuth2Client(client_id, client_secret, redirect_uris[0]);
-
-    fs.readFile(TOKEN_PATH, (err, token) => {
-        if (err) {
+    try {
+        oAuth2Client = new OAuth2Client(client_id, client_secret, redirect_uris[0]);
+        oAuth2Client.setCredentials(TOKEN_PATH);
+        drive = google.drive({ version: "v3", auth: oAuth2Client });
+        console.log("Authenticated successfully!");
+    } catch (error) {
+        if (error) {
+            console.error("Error initializing OAuth2 client:", error);
             getNewToken(oAuth2Client);
-        } else {
-            oAuth2Client.setCredentials(JSON.parse(token));
-            drive = google.drive({ version: "v3", auth: oAuth2Client });
-            console.log("Authenticated successfully!");
         }
-    });
+    }
 }
 
 // Generate a new token and prompt user for authorization
