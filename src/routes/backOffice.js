@@ -110,7 +110,8 @@ async function getCarGraph(req, res, next) {
 
 async function getPackageTable(req, res) {
   try {
-    const response = await feature.backOffice.getPackageTable();
+    const { isAll } = req.query;
+    const response = await feature.backOffice.getPackageTable(isAll);
     res.json(response);
   } catch (error) {
     console.error("Error processing request:", error);

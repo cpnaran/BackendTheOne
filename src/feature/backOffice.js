@@ -263,14 +263,19 @@ export const deletePackage = async (id) => {
   return "success";
 };
 
-export const getPackageTable = async () => {
-  const Packages = await Package.findAll({
+export const getPackageTable = async (isAll = false) => {
+  let filter_id = "30d27f15-0ace-4263-b789-1c851d20ac6c";
+  let where = {
     where: {
-      id: {
-        [Op.ne]: "30d27f15-0ace-4263-b789-1c851d20ac6c",
-      },
+      id: { [Op.ne]: filter_id },
     },
-  });
+  };
+
+  if (isAll === "true") {
+    where = {};
+  }
+
+  const Packages = await Package.findAll(where);
   return Packages;
 };
 
