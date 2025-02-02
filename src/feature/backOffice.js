@@ -14,6 +14,7 @@ import {
   getMonth,
   getHours,
   addYears,
+  add,
 } from "date-fns";
 import Package from "../models/Package.js";
 import LogData from "../models/LogData.js";
@@ -554,4 +555,72 @@ export const getPremiumoptions = async () => {
   const list = await Package.findAll({ where: { packageType: "PREMIUM" } });
 
   return list;
+};
+
+export const createUser = async (data, transaction) => {
+  if (transaction === undefined) {
+    throw new Error("transaction is required!");
+  }
+
+  const { userId, fullName, telNo, packageId, license } = data;
+  const createdUser = await User.findOrCreate({
+    where: { userId },
+    defaults: {
+      userId,
+      fullName,
+      telNo,
+    },
+    transaction,
+  });
+
+  const str = license.replace(/\s+/g, "");
+  const packageData = await Package.findOne({
+    where: { id: packageId },
+  });
+  if (packageData.packageType === "PROMOTION") {
+    const isUsed = await Transaction.findOne({
+      where: {
+        userId,
+        packageId: packageId,
+        paymentState: "SUCCESS",
+      },
+    });
+    if (isUsed) {
+      await transaction.rollback();
+      throw new Error("ขอโทษค่ะ ผู้ใช้งานเคยสมัครแพ็คเกจโปรโมชั่นนี้ไปแล้ว");
+    }
+  }
+
+  const getLicense = await License.findOne({
+    where: {
+      license: str,
+    },
+  });
+  if (getLicense) {
+    await transaction.rollback();
+    throw new Error("ขอโทษค่ะ ทะเบียนนี้มีในระบบแล้ว");
+  }
+
+  const createTransaction = await Transaction.create(
+    {
+      userId,
+      packageId,
+      paymentState: "SUCCESS",
+      license: str,
+      amount: packageData.amount,
+    },
+    { transaction }
+  );
+  let dateNow = new Date();
+  dateNow = add(dateNow, { days: packageData.days });
+  dateNow.setHours(0, 0, 0, 0);
+  await License.create(
+    {
+      userId,
+      license: str,
+      expiredAt: dateNow,
+    },
+    { transaction }
+  );
+  return "success";
 };

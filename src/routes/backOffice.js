@@ -1,6 +1,7 @@
 import express, { response } from "express";
 
 import feature from "../feature/index.js";
+import sequelize from "../../database.js";
 
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.get("/Car/list", getCarList);
 router.put("/Car/Promote", promote);
 router.put("/Car/Demote", demote);
 router.put("/Car/Add-days", addDays);
+router.post("/User", createUser);
 
 async function getMonthlyRevenue(req, res, next) {
   try {
@@ -180,6 +182,20 @@ async function getPremiuimOptions(req, res) {
     const response = await feature.backOffice.getPremiumoptions();
     res.json(response);
   } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(400).send(error.message);
+  }
+}
+
+async function createUser(req, res, next) {
+  const transaction = await sequelize.transaction();
+  try {
+    const data = req.body;
+    const response = await feature.backOffice.createUser(data, transaction);
+    await transaction.commit();
+    res.json("created");
+  } catch (error) {
+    await transaction.rollback();
     console.error("Error processing request:", error);
     res.status(400).send(error.message);
   }
