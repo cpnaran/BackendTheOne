@@ -58,6 +58,18 @@ jobs:
           echo "IP_PASSWORD=${{secrets.IP_PASSWORD}}" >> .env
           echo "URL_CAMERA=${{secrets.URL_CAMERA}}" >> .env
           echo "CHANNEL_SECRET=${{secrets.CHANNEL_SECRET}}" >> .env
+          echo "CLIENT_ID=${{secrets.CLIENT_ID}}" >> .env
+          echo "PROJECT_ID=${{secrets.PROJECT_ID}}" >> .env
+          echo "AUTH_URI=${{secrets.AUTH_URI}}" >> .env
+          echo "TOKEN_URI=${{secrets.TOKEN_URI}}" >> .env
+          echo "AUTH_PROVIDER_X509_CERT_URL=${{secrets.AUTH_PROVIDER_X509_CERT_URL}}" >> .env
+          echo "CLIENT_SECRET=${{secrets.CLIENT_SECRET}}" >> .env
+          echo "REDIRECT_URIS=${{secrets.REDIRECT_URIS}}" >> .env
+          echo "ACCESS_TOKEN_GOOGLE=${{secrets.ACCESS_TOKEN_GOOGLE}}" >> .env
+          echo "REFRESH_TOKEN=${{secrets.REFRESH_TOKEN}}" >> .env
+          echo "SCOPE=${{secrets.SCOPE}}" >> .env
+          echo "TOKEN_TYPE=${{secrets.TOKEN_TYPE}}" >> .env
+          echo "EXPIRY_DATE=${{secrets.EXPIRY_DATE}}" >> .env
 
       - name: Run Docker Container
         run: docker run --restart=always --env-file .env -d -p 3000:3000 --name backendtheone-container theoneparking/backendtheone
