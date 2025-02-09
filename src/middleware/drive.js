@@ -3,16 +3,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
+import { PassThrough } from "stream";
 
 // Set up Google Drive API
 const SCOPES = process.env.SCOPE;
-// const TOKEN_PATH = {
-//   access_token: process.env.ACCESS_TOKEN,
-//   refresh_token: process.env.REFRESH_TOKEN,
-//   scope: process.env.SCOPE,
-//   token_type: process.env.TOKEN_TYPE,
-//   expiry_date: process.env.EXPIRY_DATE,
-// };
 const TOKEN_PATH = "token.json";
 
 const CREDENTIALS_PATH = {
@@ -79,14 +73,17 @@ async function makeFilePublic(fileId) {
 // Upload a file to Google Drive
 export async function uploadFile(filePath) {
   if (!drive) throw new Error("Drive API not initialized");
+  const stream = new PassThrough();
+  stream.end(filePath);
 
   const fileMetadata = {
-    name: path.basename(filePath),
+    name: 'source.webp',
+    mimeType: 'image/webp'
   };
 
   const media = {
-    mimeType: "image/jpeg", // Adjust MIME type based on your file
-    body: fs.createReadStream(filePath),
+    mimeType: "image/webp", // Adjust MIME type based on your file
+    body: stream,
   };
 
   try {
@@ -103,7 +100,6 @@ export async function uploadFile(filePath) {
     await makeFilePublic(fileId);
 
     const publicUrl = `https://drive.google.com/uc?id=${fileId}&export=view`;
-
     return {
       message: "File uploaded successfully",
       fileId: fileId,
@@ -122,7 +118,7 @@ export async function listFiles(pageSize = 10) {
   try {
     const response = await drive.files.list({
       pageSize: pageSize,
-      fields: "files(id, name)",
+      fields: "files(id, name, createdTime)",
     });
 
     const files = response.data.files;

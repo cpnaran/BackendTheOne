@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 scheduleOptionsTask();
 scheduleNotifyTask();
+scheduleDriveTask();
 
 //import routes
 import webHookRoutes from "./src/routes/webhook.js";
@@ -32,6 +33,7 @@ import authRoutes from "./src/routes/auth.js";
 import oAuthRoutes from "./src/routes/oAuth.js";
 import testRoutes from "./src/routes/test.js";
 import { initializeAuth } from "./src/middleware/drive.js";
+import scheduleDriveTask from "./src/cron/drive.job.js";
 console.log(new Date());
 
 app.use(cors());
