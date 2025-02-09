@@ -21,8 +21,8 @@ export async function generatePromptPayQR({ expiration = 600, amount = 100 }) {
     const buffer = Buffer.from(base64Data, 'base64');
     const webpBuffer = await sharp(buffer).webp({ quality: 50 }).toBuffer(); // ลดคุณภาพของภาพเพื่อให้ไฟล์เล็กลง
     const img = await uploadFile(webpBuffer);
-    console.log(img, 'Link for qrCode')
-    return img
+    console.log(img.publicUrl, 'Link for qrCode')
+    return img.publicUrl
   } catch (err) {
     console.error('Error creating QR Code:', err);
   }
