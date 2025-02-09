@@ -6,7 +6,7 @@ import { addDays, addHours, subDays } from 'date-fns';
 
 // สร้าง Cron Job ที่รันทุกนาที
 const scheduleDriveTask = () => {
-    cron.schedule('*/10 * * * * *', async () => {
+    cron.schedule('0 0 * * *', async () => {
         console.log('Running Drive job every day at midnight:', new Date());
         try {
             const timeNow = new Date()
@@ -15,7 +15,6 @@ const scheduleDriveTask = () => {
             console.log('yesterday in drive.job.js :', yesterday)
             file.forEach(async item => {
                 if (item.createdTime <= yesterday) {
-                    console.log('im in')
                     await deleteFile(item.id)
                 }
             });
