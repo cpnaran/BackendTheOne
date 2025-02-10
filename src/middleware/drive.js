@@ -55,6 +55,7 @@ function getNewToken(oAuth2Client) {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
+    prompt: "consent", // Forces Google to provide a new refresh token
   });
   console.log("Authorize this app by visiting this URL:", authUrl);
 }
@@ -77,8 +78,8 @@ export async function uploadFile(filePath) {
   stream.end(filePath);
 
   const fileMetadata = {
-    name: 'source.webp',
-    mimeType: 'image/webp'
+    name: "source.webp",
+    mimeType: "image/webp",
   };
 
   const media = {
