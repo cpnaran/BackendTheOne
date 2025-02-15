@@ -15,6 +15,7 @@ import { Op } from "sequelize";
 import { Client } from '@line/bot-sdk';
 import FormData from 'form-data';
 import fs from 'fs'
+import { minutesInHour } from "date-fns/constants";
 const router = express.Router();
 config();
 
@@ -248,10 +249,11 @@ router.post("/", async (req, res) => {
                         }
                     },
                 });
-                if (occupiedSlots > 84) {
-                    occupiedSlots = 84;
+                const maximumCar = 89
+                if (occupiedSlots > maximumCar) {
+                    occupiedSlots = maximumCar;
                 }
-                const availableSlots = 84 - occupiedSlots;
+                const availableSlots = maximumCar - occupiedSlots;
 
                 response = {
                     replyToken,
@@ -280,7 +282,7 @@ router.post("/", async (req, res) => {
                                     contents: [
                                         {
                                             type: "text",
-                                            text: "จำนวนช่องจอดทั้งหมด: 84",
+                                            text: `จำนวนช่องจอดทั้งหมด: ${maximumCar}`,
                                             size: "md",
                                             color: "#333333",
                                         },
@@ -658,7 +660,17 @@ router.post("/", async (req, res) => {
                     if (event?.type === 'postback') {
                         // ส่งข้อความใหม่ทับข้อความเดิม
                         console.log('webhook.js 670 ', event.postback.data)
-                        const textLicense = event.postback.data
+                        const [textLicense, time] = event.postback.data.split("-");
+                        const currentTime = new Date();
+                        const postbackTime = new Date(time);
+                        const timeDifference = (currentTime - postbackTime) / (1000 * 60 * 60); // difference in hours
+                        if (timeDifference > 2) {
+                            // await client.replyMessage(event.replyToken, {
+                            //     type: 'text',
+                            //     text: 'คำขอหมดอายุ กรุณาลองใหม่อีกครั้ง',
+                            // });
+                            return;
+                        }
                         const licenseData = await License.findOne({
                             where: {
                                 license: textLicense,
